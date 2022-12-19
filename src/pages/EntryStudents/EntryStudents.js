@@ -3,45 +3,6 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'react-hot-toast';
 
 const EntryStudents = () => {
-    // const semesters = [
-    //     {
-    //         _id: 1,
-    //         name: 'Spring 2023',
-    //         value: 'spring-2023'
-    //     },
-    //     {
-    //         _id: 2,
-    //         name: 'Fall 2022',
-    //         value: 'fall-2022'
-    //     }
-    // ]
-
-    // const courses = [
-    //     {
-    //         _id: 1,
-    //         code: 'CSE 1301',
-    //         title: 'Physics',
-    //         value: 'cse-1301-physics'
-    //     },
-    //     {
-    //         _id: 2,
-    //         code: 'CSE 1302',
-    //         title: 'Physics Lab',
-    //         value: 'cse-1301-physics-lab'
-    //     },
-    //     {
-    //         _id: 3,
-    //         code: 'CSE 2303',
-    //         title: 'Electrical Drives and Instrumentation',
-    //         value: 'cse-2303-EDI'
-    //     },
-    //     {
-    //         _id: 4,
-    //         code: 'CSE 2304',
-    //         title: 'Electrical Drives and Instrumentation Lab',
-    //         value: 'cse-2303-EDI-lab'
-    //     }
-    // ]
 
     const sections = [
         {
@@ -155,8 +116,6 @@ const EntryStudents = () => {
                         })
                 }
             })
-
-
     }
 
 
@@ -186,7 +145,7 @@ const EntryStudents = () => {
                 </select>
                 {errors.semester && <span className='text-red-600'>{errors.semester?.message}</span>} */}
 
-
+                {/* Batch selection */}
                 <div className='flex items-center justify-between w-full '>
                     <select {...register("batch", { required: "Batch selection is Required" })} className="select select-primary w-[30%] ">
                         <option value=''>Admitted Batch</option>
@@ -196,7 +155,7 @@ const EntryStudents = () => {
                     </select>
                     {errors.batch && <span className='text-red-600'>{errors.batch?.message}</span>}
 
-
+                    {/* Day and Evening Selection  */}
                     <div className='flex items-center w-[35%] space-x-4'>
                         <label className="label-text font-bold">Day</label>
                         <input type="radio" {...register("program", { required: "Program selection is Required" })} value='Day' className="radio checked:bg-blue-500" />
@@ -207,6 +166,7 @@ const EntryStudents = () => {
                         {errors.program && <span className='text-red-600'>{errors.program?.message}</span>}
                     </div>
 
+                    {/* Section Selection  */}
                     <select {...register("section", { required: "Section selection is Required" })} className="select select-primary w-[30%] ">
                         <option value=''>Select Section</option>
                         {
@@ -214,7 +174,6 @@ const EntryStudents = () => {
                         }
                     </select>
                     {errors.course && <span className='text-red-600'>{errors.course?.message}</span>}
-
                 </div>
 
 

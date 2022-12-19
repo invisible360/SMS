@@ -1,5 +1,6 @@
 import { createBrowserRouter } from "react-router-dom";
 import Main from "../layout/Main";
+import CourseAllocation from "../pages/CourseAllocation/CourseAllocation";
 import EntryStudents from "../pages/EntryStudents/EntryStudents";
 import Home from "../pages/Home/Home";
 import RegularAttendance from "../pages/RegularAttendance/RegularAttendance";
@@ -30,6 +31,10 @@ export const router = createBrowserRouter([
             {
                 path: '/seeBatchReport',
                 element: <SeeBatchReport></SeeBatchReport>
+            },
+            {
+                path: '/courseAllocation',
+                element: <CourseAllocation></CourseAllocation>
             }
         ]
     }

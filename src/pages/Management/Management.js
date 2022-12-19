@@ -5,24 +5,30 @@ const Management = () => {
     const features = [
         {
             "_id": 1,
-            name: 'Entry Student',
-            route: '/entryStudent'
+            "name": 'Entry Student',
+            "route": '/entryStudent'
+        },
+        {
+            "_id": 5,
+            "name": 'Course Allocation',
+            "route": '/courseAllocation'
         },
         {
             "_id": 2,
-            name: 'Regular Attendance',
-            route: '/regularAttendance'
+            "name": 'Regular Attendance',
+            "route": '/regularAttendance'
         },
         {
             "_id": 3,
-            name: 'View Student List',
+            "name": 'View Student List',
             route: '/viewStudentList'
         },
         {
             "_id": 4,
-            name: 'See Batch Report',
-            route: '/seeBatchReport'
+            "name": 'See Batch Report',
+            "route": '/seeBatchReport'
         },
+        
 
     ]
     return (
