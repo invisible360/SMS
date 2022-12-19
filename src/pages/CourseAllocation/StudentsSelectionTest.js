@@ -49,7 +49,7 @@ const StudentsSelection = () => {
     const [isCheck, setIsCheck] = useState([]);
     const [isCheckAll, setIsCheckAll] = useState(false);
     const [assignStd, setAssignStd] = useState([]);
-    const [idHolder, setIdHolder] = useState('');
+
 
     const handlefetchStudent = data => {
         const batch = parseInt(data.batch);
@@ -64,7 +64,6 @@ const StudentsSelection = () => {
         setIsCheckAll(false);
         setIsCheck([]);
         setAssignStd([]);
-        setIdHolder('');
 
         fetch(`http://localhost:5000/student-list-fetch`, {
             method: 'POST',
@@ -105,7 +104,9 @@ const StudentsSelection = () => {
                     program: selected.program
                 })
             }
-            console.log(assignStd);
+            if (assignStd.length > 0) {
+                console.log(assignStd);
+            }
         }
     }
 
@@ -120,7 +121,6 @@ const StudentsSelection = () => {
     const handleClick = e => {
         setIsCheckAll(false);
         const { id, checked } = e.target;
-        setIdHolder(id);
         setIsCheck([...isCheck, id]);
         if (!checked) {
             setIsCheck(isCheck.filter(item => item !== id));
@@ -212,7 +212,7 @@ const StudentsSelection = () => {
                         </tbody>
                     </table>
                 </div>
-                <div className={`text-center ${idHolder || isCheckAll ? 'block' : 'hidden'}`}>
+                <div className={`text-center ${isCheck.length > 0 || isCheckAll ? 'block' : 'hidden'}`}>
                     <button className='btn btn-primary btn-circle btn-outline btn-lg'><span className='text-5xl'><BiRightArrow /></span></button>
                 </div>
             </form>
