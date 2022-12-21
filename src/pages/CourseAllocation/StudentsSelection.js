@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { toast } from 'react-hot-toast';
 import { BiRightArrow } from "react-icons/bi";
 
-const StudentsSelection = () => {
+const StudentsSelection = ({ sendHoldValue }) => {
     const { register, handleSubmit, formState: { errors } } = useForm();
     const { register: registerStd, handleSubmit: handleSubmitStd } = useForm();
 
@@ -44,15 +45,12 @@ const StudentsSelection = () => {
         }
     ]
 
-    const [filter, setFilter] = useState({});
+    const [holdValue, setHoldValue] = useState([]);
+    const [list, setList] = useState([]);
     const [selected, setSelected] = useState({});
-    const [btnHidden, setBtnHidden] = useState('hidden');
-    // const [selectAll, setSelectAll] = useState(false);
-    const [isChecked, setIsChecked] = useState(false);
-
-    const handleOnChange = () => {
-        setIsChecked(!isChecked);
-    };
+    const [isCheck, setIsCheck] = useState([]);
+    const [isCheckAll, setIsCheckAll] = useState(false);
+    
 
     const handlefetchStudent = data => {
         const batch = parseInt(data.batch);
@@ -64,6 +62,9 @@ const StudentsSelection = () => {
             program: data.program
         }
 
+        setIsCheckAll(false);
+        setIsCheck([]);
+
         fetch(`http://localhost:5000/student-list-fetch`, {
             method: 'POST',
             headers: {
@@ -73,39 +74,61 @@ const StudentsSelection = () => {
         })
             .then(res => res.json())
             .then(data => {
-                // console.log(data);
                 if (data.length > 0) {
-                    setFilter(data);
-                    setBtnHidden('block');
-                    setIsChecked(false)
+                    setList(data);
                 }
                 else {
-                    setFilter([]);
-                    setBtnHidden('hidden');
-                    setIsChecked(false)
+                    setList([]);
                 }
-
             })
     }
 
     const handleStudentAssignment = data => {
-        console.log(data);
-        var passInfo = data.stdInfo;
-        if (typeof (data.stdInfo) === 'string') {
-            passInfo = [data.stdInfo]
+        if (isCheckAll) {
+            if (list.length === 0) {
+                toast.error("No Student Selected");
+            }
+            setHoldValue([...holdValue, ...list]);
         }
-        var assingStd = [];
-        for (var i = 0; i < passInfo.length; i++) {
-            assingStd.push({
-                name: passInfo[i].split(' ')[0],
-                id: parseInt((passInfo[i].split(' ')[1])),
-                batch: selected.batch,
-                section: selected.section,
-                program: selected.program
-            })
+        else {
+            var passInfo = data.stdInfo;
+            if (typeof (data.stdInfo) === 'string') {
+                passInfo = [data.stdInfo]
+            }
+
+            var assingStd = [];
+            for (var i = 0; i < passInfo.length; i++) {
+                assingStd.push({_id: passInfo[i]}
+                )
+            }
+            setHoldValue([...holdValue, ...assingStd])
+
         }
-        console.log(assingStd);
+
     }
+
+    sendHoldValue(holdValue);
+
+    const handleSelectAll = () => {
+        // setHoldValue([...holdValue, ...list]);
+
+        setIsCheckAll(!isCheckAll);
+        setIsCheck(list.map(li => li._id));
+        if (isCheckAll) {
+            setIsCheck([]);
+        }
+    };
+
+    const handleClick = e => {
+        // setHoldValue([...holdValue, ...selectedStd]);
+
+        setIsCheckAll(false);
+        const { id, checked } = e.target;
+        setIsCheck([...isCheck, id]);
+        if (!checked) {
+            setIsCheck(isCheck.filter(item => item !== id));
+        }
+    };
 
     return (
         <div className='p-5'>
@@ -157,26 +180,26 @@ const StudentsSelection = () => {
                         <thead>
                             <tr>
                                 <th>Sl.</th>
-                                <th className='flex items-center space-x-3'><input type="checkbox" className="checkbox" checked={isChecked}
-                                    onChange={handleOnChange} /><span>Select All</span></th>
+                                <th className='flex items-center space-x-3'><input type="checkbox" className="checkbox"
+                                    onChange={handleSelectAll}
+                                    checked={isCheckAll} /><span>Select All</span></th>
                                 <th>Name</th>
                                 <th>ID</th>
                             </tr>
                         </thead>
                         <tbody>
                             {
-                                filter.length > 0 ?
+                                list.length > 0 ?
                                     <>
-                                        {filter.map((f, i) => <tr key={f._id}>
+                                        {list.map((f, i) => <tr key={f._id}>
                                             <th>{i + 1}</th>
-                                            {/* {
-                                                selectAll ? 
-                                                <td><input type="checkbox" {...registerStd('stdInfo')} value={`${f.name} ${parseInt(f.id)}`} className="checkbox" checked={selectAll} /></td>
-                                                :
-                                                <td><input type="checkbox" {...registerStd('stdInfo')} value={`${f.name} ${parseInt(f.id)}`} className="checkbox" /></td>
-                                            } */}
-                                            <td><input type="checkbox" {...registerStd('stdInfo')} value={`${f.name} ${parseInt(f.id)}`} className="checkbox" checked={isChecked} /></td>
 
+                                            <td>
+                                                <input type="checkbox" {...registerStd('stdInfo')} value={f._id} className="checkbox"
+                                                    id={f._id}
+                                                    onChange={handleClick}
+                                                    checked={isCheck.includes(f._id)} />
+                                            </td>
 
                                             <td>{f.name}</td>
                                             <td>{f.id}</td>
@@ -190,7 +213,7 @@ const StudentsSelection = () => {
                         </tbody>
                     </table>
                 </div>
-                <div className={`text-center ${btnHidden}`}>
+                <div className={`text-center ${isCheck.length > 0 || isCheckAll ? 'block' : 'hidden'}`}>
                     <button className='btn btn-primary btn-circle btn-outline btn-lg'><span className='text-5xl'><BiRightArrow /></span></button>
                 </div>
             </form>

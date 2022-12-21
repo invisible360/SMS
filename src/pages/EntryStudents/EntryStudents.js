@@ -64,8 +64,13 @@ const EntryStudents = () => {
     const handleStudentEntry = data => {
 
         // image uploading handling
+        // console.log(data.image.length);
+        if (data.image.length === 0) {
+            toast.error('Image need to be required')
+        }
         const image = data.image[0];
         const formData = new FormData();
+        // console.log(formData);
         formData.append('image', image);
         const url = `https://api.imgbb.com/1/upload?key=${imageHostKey}`;
 
@@ -107,7 +112,7 @@ const EntryStudents = () => {
                                 })
                                     .then(res => res.json())
                                     .then(result => {
-                                        console.log(result);
+                                        // console.log(result);
                                         if (result.acknowledged) {
                                             toast.success('Entry Successful');
                                         }
@@ -137,14 +142,6 @@ const EntryStudents = () => {
                 })} placeholder="ID" className="input input-bordered input-primary w-full" />
                 {errors.studentId && <span className='text-red-600'>{errors.studentId?.message}</span>}
 
-                {/* <select {...register("semester", { required: "Semester selection is Required" })} className="select select-primary w-[50%] ">
-                    <option value=''>Select Semester</option>
-                    {
-                        semesters.map(semester => <option key={semester._id} value={semester.value}>{semester.name}</option>)
-                    }
-                </select>
-                {errors.semester && <span className='text-red-600'>{errors.semester?.message}</span>} */}
-
                 {/* Batch selection */}
                 <div className='flex items-center justify-between w-full '>
                     <select {...register("batch", { required: "Batch selection is Required" })} className="select select-primary w-[30%] ">
@@ -153,7 +150,6 @@ const EntryStudents = () => {
                             batches.map(batch => <option key={batch._id} value={batch.mainBatch}>{batch.mainBatch}</option>)
                         }
                     </select>
-                    {errors.batch && <span className='text-red-600'>{errors.batch?.message}</span>}
 
                     {/* Day and Evening Selection  */}
                     <div className='flex items-center w-[35%] space-x-4'>
@@ -163,7 +159,6 @@ const EntryStudents = () => {
                         <label className="label-text font-bold">Evening</label>
                         <input type="radio" {...register("program", { required: "Program selection is Required" })} value="Evening" className="radio checked:bg-red-500" />
 
-                        {errors.program && <span className='text-red-600'>{errors.program?.message}</span>}
                     </div>
 
                     {/* Section Selection  */}
@@ -173,9 +168,11 @@ const EntryStudents = () => {
                             sections.map(sections => <option key={sections._id} value={sections.section}>{sections.section}</option>)
                         }
                     </select>
-                    {errors.course && <span className='text-red-600'>{errors.course?.message}</span>}
                 </div>
 
+                {errors.batch && <span className='text-red-600'>{errors.batch?.message}</span>}
+                {errors.program && <span className='text-red-600'>{errors.program?.message}</span>}
+                {errors.section && <span className='text-red-600'>{errors.section?.message}</span>}
 
                 {/* Student Email Field  */}
                 <input type="email" {...register("email", { required: "Email is Required" })} placeholder="Email" className="input input-bordered input-primary w-full " />
@@ -215,14 +212,6 @@ const EntryStudents = () => {
                     </label>
                     <input type="file" {...register("image")} className="file-input file-input-bordered file-input-primary w-full" />
                 </div>
-
-                {/* <select {...register("course", { required: "Course selection is Required" })} className="select select-primary w-full ">
-                    <option value=''>Select Course</option>
-                    {
-                        courses.map(course => <option key={course._id} value={course.value}>{course.code}: {course.title}</option>)
-                    }
-                </select>
-                {errors.course && <span className='text-red-600'>{errors.course?.message}</span>} */}
 
                 <input type="submit" value="Enter" className='btn btn-primary w-full text-white' />
             </form>

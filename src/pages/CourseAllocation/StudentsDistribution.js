@@ -1,11 +1,35 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useNavigate } from 'react-router-dom';
 
-const StudentsDistribution = () => {
+const StudentsDistribution = ({ dataHold }) => {
+    // const [fetchId, setFetchId] = useState([]);
+    // console.log(dataHold);
+    const arrayUniqueByKey = [...new Map(dataHold.map(item =>
+        [item['_id'], item])).values()];
+    // console.log(arrayUniqueByKey);
+
+    const _ids = [];
+    arrayUniqueByKey.map(e => _ids.push(e._id));
+    // console.log(_ids);
+
+    const [assign, setAssign] = useState([]);
+
+    useEffect(() => {
+        fetch(`http://localhost:5000/assigned-students`, {
+            method: 'POST',
+            headers: {
+                "content-type": "application/json"
+            },
+            body: JSON.stringify(_ids)
+        })
+            .then(res => res.json())
+            .then(data => {
+                setAssign(data);
+            })
+    }, [_ids])
+
 
     const { register, handleSubmit, formState: { errors } } = useForm();
-    const navigate = useNavigate ()
 
     const semesters = [
         {
@@ -46,10 +70,13 @@ const StudentsDistribution = () => {
             value: 'cse-2303-EDI-lab'
         }
     ]
+    // const [finalAssignemnt, setFinalAssignment] = useState([]);
 
-    const handleAssignStudents = data => {
+    // const handleAssignStudents = data => {
 
-    }
+    //     setFinalAssignment(arrayUniqueByKey.map(e => ({ ...e, semester: data.semester, course: data.course })))
+    // }
+    // console.log(finalAssignemnt);
 
     return (
         <div className='p-5'>
@@ -59,25 +86,27 @@ const StudentsDistribution = () => {
                     <thead>
                         <tr>
                             <th>Sl.</th>
-                            <th className='flex items-center space-x-3'>Delete</th>
                             <th>Name</th>
                             <th>ID</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <th>1</th>
-                            <td><button className='btn btn-circle btn-error text-white btn-sm'>X</button></td>
-                            <td>akash</td>
-                            <td>1205</td>
-                        </tr>
+                        {
+                            assign.map((std, i) => <tr key={std._id}>
+                                <th>{i + 1}</th>
+                                <td>{std.name}</td>
+                                <td>{std.id}</td>
+                            </tr>)
+
+                        }
                     </tbody>
                 </table>
 
-            </form>
 
+            </form>
+            {/* onSubmit={handleSubmit(handleAssignStudents)}  */}
             <h3 className='text-center font-bold text-primary text-xl my-5'>Final Assignment</h3>
-            <form onSubmit={handleSubmit(handleAssignStudents)} className='flex flex-col items-center justify-center'>
+            <form className='flex flex-col items-center justify-center'>
                 {/* Semester selection */}
                 <div className='flex items-center justify-between w-full '>
                     <select {...register("semester", { required: "Semester selection is Required" })} className="select select-primary w-[45%] ">
@@ -96,11 +125,11 @@ const StudentsDistribution = () => {
                     </select>
                 </div>
 
-                {errors.program && <span className='text-red-600'>{errors.program?.message}</span>}
-                {errors.batch && <span className='text-red-600'>{errors.batch?.message}</span>}
-                {errors.section && <span className='text-red-600'>{errors.section?.message}</span>}
+                {errors.semester && <span className='text-red-600'>{errors.semester?.message}</span>}
+                {errors.course && <span className='text-red-600'>{errors.course?.message}</span>}
+                {/* {errors.section && <span className='text-red-600'>{errors.section?.message}</span>} */}
 
-                <input type="submit" onClick={()=> navigate (0)} value="Submit" className='btn btn-primary btn-sm text-white my-5' />
+                <input type="submit" value="Submit" className='btn btn-primary btn-sm text-white my-5' />
             </form>
 
         </div>
