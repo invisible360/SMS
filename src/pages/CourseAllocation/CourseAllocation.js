@@ -7,6 +7,7 @@ const CourseAllocation = () => {
     const [dataHold, setDataHold] = useState([]);
 
     const sendHoldValue = (valHld) => {
+        // console.log(valHld);
        
         setDataHold(valHld);
     

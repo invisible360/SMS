@@ -20,7 +20,7 @@ const Header = ({ handleDarkMode }) => {
                         <div className="space-x-2 py-3">
                             <Typewriter
                                 options={{
-                                    strings: [`Develeoped by- <b>Zakir Hossain<sub className="text-xs ml-1">_invisible_360</sub></b>`],
+                                    strings: [`Developed by- <b>Zakir Hossain<sub className="text-xs ml-1">_invisible_360</sub></b>`],
                                     autoStart: true,
                                     loop: true,
                                     delay: 200

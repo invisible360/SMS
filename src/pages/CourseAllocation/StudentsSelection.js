@@ -2,6 +2,10 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-hot-toast';
 import { BiRightArrow } from "react-icons/bi";
+import { AiOutlineReload } from "react-icons/ai";
+import useAppState from '../../hook/useAppState';
+import useListState from '../../hook/useListState';
+
 
 const StudentsSelection = ({ sendHoldValue }) => {
     const { register, handleSubmit, formState: { errors } } = useForm();
@@ -45,12 +49,28 @@ const StudentsSelection = ({ sendHoldValue }) => {
         }
     ]
 
+    const semesters = [
+        {
+            _id: 1,
+            name: 'Spring 2023',
+            value: 'spring-2023'
+        },
+        {
+            _id: 2,
+            name: 'Fall 2022',
+            value: 'fall-2022'
+        }
+    ]
+
+    const [storedStd, setStroredStd] = useAppState([]);
+    // const [reload, setReload] = useListState();
+
     const [holdValue, setHoldValue] = useState([]);
     const [list, setList] = useState([]);
     const [selected, setSelected] = useState({});
     const [isCheck, setIsCheck] = useState([]);
     const [isCheckAll, setIsCheckAll] = useState(false);
-    
+
 
     const handlefetchStudent = data => {
         const batch = parseInt(data.batch);
@@ -59,11 +79,12 @@ const StudentsSelection = ({ sendHoldValue }) => {
         const studentFetchingInfo = {
             batch: batch,
             section: data.section,
-            program: data.program
+            program: data.program,
+            semester: data.semester
         }
 
         setIsCheckAll(false);
-        setIsCheck([]);
+        // setIsCheck([]);
 
         fetch(`http://localhost:5000/student-list-fetch`, {
             method: 'POST',
@@ -76,6 +97,7 @@ const StudentsSelection = ({ sendHoldValue }) => {
             .then(data => {
                 if (data.length > 0) {
                     setList(data);
+                    fetchAssignStd([]);
                 }
                 else {
                     setList([]);
@@ -83,12 +105,29 @@ const StudentsSelection = ({ sendHoldValue }) => {
             })
     }
 
+    // const handleStudentAssignment = event => {
+    //     event.preventDefault();
+    //     const data = event.target.asd;
+    //     console.log(data);
+
+    // }
+
     const handleStudentAssignment = data => {
+        // setReload(false);
+        // console.log(data.stdInfo);
+        // console.log(storedStd);
+
         if (isCheckAll) {
             if (list.length === 0) {
-                toast.error("No Student Selected");
+                toast.error("Choose Semester, Batch, section and Program");
             }
-            setHoldValue([...holdValue, ...list]);
+            // setHoldValue([...holdValue, ...list]);
+            else {
+
+                // setHoldValue(list);
+                // setStroredStd(holdValue);
+                fetchAssignStd(list);
+            }
         }
         else {
             var passInfo = data.stdInfo;
@@ -98,20 +137,51 @@ const StudentsSelection = ({ sendHoldValue }) => {
 
             var assingStd = [];
             for (var i = 0; i < passInfo.length; i++) {
-                assingStd.push({_id: passInfo[i]}
+                assingStd.push({ _id: passInfo[i] }
                 )
             }
-            setHoldValue([...holdValue, ...assingStd])
+            // console.log([...storedStd, ...assingStd]);
+            // console.log(assingStd);
+            // setHoldValue([...holdValue, ...assingStd]);
+            // setHoldValue(assingStd);
+            // setStroredStd(holdValue);
+            // fetchAssignStd(assingStd);
+            fetchAssignStd([...storedStd, ...assingStd]);
 
         }
+    }
+
+    const fetchAssignStd = (holdValue) => {
+        // const arrayUniqueByKey = [...new Map(holdValue.map(item => [item['_id'], item])).values()];
+        const _ids = [];
+        // arrayUniqueByKey.map(e => _ids.push(e._id));
+        holdValue.map(e => _ids.push(e._id));
+        // console.log(_ids);
+
+
+        fetch(`http://localhost:5000/assigned-students`, {
+            method: 'POST',
+            headers: {
+                "content-type": "application/json"
+            },
+            body: JSON.stringify(_ids)
+        })
+            .then(res => res.json())
+            .then(data => {
+                // console.log(data);
+                // sendHoldValue(data);
+                setStroredStd(data)
+                // setHoldValue ([]);
+                setIsCheck([]);
+                setIsCheckAll(false);
+
+            })
 
     }
 
-    sendHoldValue(holdValue);
+    // sendHoldValue(holdValue);//problem-1**** douvble click a data load hocche
 
     const handleSelectAll = () => {
-        // setHoldValue([...holdValue, ...list]);
-
         setIsCheckAll(!isCheckAll);
         setIsCheck(list.map(li => li._id));
         if (isCheckAll) {
@@ -120,8 +190,7 @@ const StudentsSelection = ({ sendHoldValue }) => {
     };
 
     const handleClick = e => {
-        // setHoldValue([...holdValue, ...selectedStd]);
-
+        // setReload(false)
         setIsCheckAll(false);
         const { id, checked } = e.target;
         setIsCheck([...isCheck, id]);
@@ -134,6 +203,16 @@ const StudentsSelection = ({ sendHoldValue }) => {
         <div className='p-5'>
             <h3 className='text-center font-bold text-primary text-xl my-5'>Students Selection</h3>
             <form onSubmit={handleSubmit(handlefetchStudent)} className='flex flex-col items-center justify-center'>
+                
+                {/* semester selection  */}
+                <select {...register("semester", { required: "Semester selection is Required" })} className="select select-primary w-full mb-5">
+                    <option value=''>Semester</option>
+                    {
+                        semesters.map(semester => <option key={semester._id} value={semester.value}>{semester.name}</option>)
+                    }
+                </select>
+                {errors.semester && <span className='text-red-600'>{errors.semester?.message}</span>}
+
                 {/* Batch selection */}
                 <div className='flex items-center justify-between w-full '>
                     <select {...register("batch", { required: "Batch selection is Required" })} className="select select-primary w-[30%] ">
@@ -171,7 +250,8 @@ const StudentsSelection = ({ sendHoldValue }) => {
 
             <form onSubmit={handleSubmitStd(handleStudentAssignment)}>
                 <div className="overflow-x-auto my-5">
-                    <div className='grid grid-cols-3 gap-2 my-3 text-center'>
+                    <div className='grid grid-cols-4 gap-1 my-3 text-center'>
+                        <p><span className='font-bold text-blue-600'>Semester:</span> {selected.semester}</p>
                         <p><span className='font-bold text-blue-600'>Batch:</span> {selected.batch}</p>
                         <p><span className='font-bold text-blue-600'>Section:</span> {selected.section}</p>
                         <p><span className='font-bold text-blue-600'>Program:</span> {selected.program}</p>
@@ -183,8 +263,8 @@ const StudentsSelection = ({ sendHoldValue }) => {
                                 <th className='flex items-center space-x-3'><input type="checkbox" className="checkbox"
                                     onChange={handleSelectAll}
                                     checked={isCheckAll} /><span>Select All</span></th>
-                                <th>Name</th>
                                 <th>ID</th>
+                                <th>Name</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -201,8 +281,8 @@ const StudentsSelection = ({ sendHoldValue }) => {
                                                     checked={isCheck.includes(f._id)} />
                                             </td>
 
-                                            <td>{f.name}</td>
                                             <td>{f.id}</td>
+                                            <td>{f.name}</td>
                                         </tr>)}
                                     </>
                                     :
@@ -214,6 +294,7 @@ const StudentsSelection = ({ sendHoldValue }) => {
                     </table>
                 </div>
                 <div className={`text-center ${isCheck.length > 0 || isCheckAll ? 'block' : 'hidden'}`}>
+                    {/* <button className='btn btn-primary btn-circle btn-outline btn-lg'><span className='text-5xl'>{reload ? <AiOutlineReload /> : <BiRightArrow />}</span></button> */}
                     <button className='btn btn-primary btn-circle btn-outline btn-lg'><span className='text-5xl'><BiRightArrow /></span></button>
                 </div>
             </form>

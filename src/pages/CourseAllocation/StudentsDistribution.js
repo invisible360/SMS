@@ -1,48 +1,36 @@
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { toast } from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
+import useAppState from '../../hook/useAppState';
+import useListState from '../../hook/useListState';
 
 const StudentsDistribution = ({ dataHold }) => {
-    // const [fetchId, setFetchId] = useState([]);
     // console.log(dataHold);
-    const arrayUniqueByKey = [...new Map(dataHold.map(item =>
-        [item['_id'], item])).values()];
-    // console.log(arrayUniqueByKey);
+    const navigate = useNavigate();
+    const [storedStd, setStroredStd] = useAppState([]);
+    // const [reload, setReload] = useListState();
 
-    const _ids = [];
-    arrayUniqueByKey.map(e => _ids.push(e._id));
-    // console.log(_ids);
-
-    const [assign, setAssign] = useState([]);
-
-    useEffect(() => {
-        fetch(`http://localhost:5000/assigned-students`, {
-            method: 'POST',
-            headers: {
-                "content-type": "application/json"
-            },
-            body: JSON.stringify(_ids)
-        })
-            .then(res => res.json())
-            .then(data => {
-                setAssign(data);
-            })
-    }, [_ids])
-
+    const [alreadyExist, setAlreadyExist] = useState([]);
 
     const { register, handleSubmit, formState: { errors } } = useForm();
 
-    const semesters = [
-        {
-            _id: 1,
-            name: 'Spring 2023',
-            value: 'spring-2023'
-        },
-        {
-            _id: 2,
-            name: 'Fall 2022',
-            value: 'fall-2022'
-        }
-    ]
+
+    const [finalAssignemnt, setFinalAssignment] = useState([]);
+    // const [storedStd, setStoredStd] = useState(dataHold);
+
+    // const semesters = [
+    //     {
+    //         _id: 1,
+    //         name: 'Spring 2023',
+    //         value: 'spring-2023'
+    //     },
+    //     {
+    //         _id: 2,
+    //         name: 'Fall 2022',
+    //         value: 'fall-2022'
+    //     }
+    // ]
 
     const courses = [
         {
@@ -70,54 +58,119 @@ const StudentsDistribution = ({ dataHold }) => {
             value: 'cse-2303-EDI-lab'
         }
     ]
-    // const [finalAssignemnt, setFinalAssignment] = useState([]);
 
-    // const handleAssignStudents = data => {
+    const handleDeleteStd = (_id) => {
+        // setReload(true);
+        setAlreadyExist([])
 
-    //     setFinalAssignment(arrayUniqueByKey.map(e => ({ ...e, semester: data.semester, course: data.course })))
-    // }
+        const remainingStd = storedStd.filter(e => e._id !== _id);
+
+        setStroredStd(remainingStd);
+    }
+    // console.log(storedStd);
+
+    const handleAssignStudents = data => {
+
+        // const filter = storedStd.filter(e => !e.course.includes(data.course));
+        // console.log(filter);
+        // console.log(data.course);
+        // console.log(storedStd);
+        const confirm = window.confirm("Are You Sure Want to Enroll the Assigned Students?");
+        if (confirm) {
+            setFinalAssignment([storedStd.filter(e => !e.course.includes(data.course)), data.course])
+
+            setAlreadyExist(storedStd.filter(e => e.course.includes(data.course)))
+            // setFinalAssignment(storedStd.map(e => e.course.map(c => c !== data.course)))
+            // setFinalAssignment(storedStd.map(e => ({ ...e,course: data.course })))
+        } else {
+            setFinalAssignment([])
+        }
+
+    }
     // console.log(finalAssignemnt);
+
+    useEffect(() => {
+        // console.log(finalAssignemnt);
+        // console.log(alreadyExist);
+        if (alreadyExist.length > 0) {
+            toast.error("Following IDs are Already Enrolled!");
+            return;
+        }
+        else if (finalAssignemnt.length > 0) {
+
+            fetch('http://localhost:5000/spring-2023-std-list', {
+                method: 'PUT',
+                headers: {
+                    "content-type": "application/json"
+                },
+                body: JSON.stringify(finalAssignemnt)
+            })
+                .then(res => res.json())
+                .then(result => {
+                    // console.log(result);
+                    // if (result.message) {
+                    //     toast.success(result.message);
+                        navigate(0);
+                        toast.success ("Successful Operation")
+                    //     setAlreadyExist([])
+                    // }
+                    // else {
+                    //     console.log(result);
+                    //     setAlreadyExist(result)
+                    // }
+                })
+            // .catch(err => toast.error("Exception Encountered!"))
+        }
+
+    }, [finalAssignemnt, navigate])
 
     return (
         <div className='p-5'>
-            <h3 className='text-center font-bold text-primary text-xl my-5'>Assigned Students</h3>
-            <form>
-                <table className="table w-full">
-                    <thead>
-                        <tr>
-                            <th>Sl.</th>
-                            <th>Name</th>
-                            <th>ID</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {
-                            assign.map((std, i) => <tr key={std._id}>
-                                <th>{i + 1}</th>
-                                <td>{std.name}</td>
-                                <td>{std.id}</td>
-                            </tr>)
 
-                        }
-                    </tbody>
-                </table>
+            {
+                alreadyExist.length > 0 &&
+                <>
+                    <h3 className='text-center font-bold text-primary text-xl my-5'>Already Assigned Student</h3>
+                    <p className='text-red-600'>***Following Students are already Enrolled for this particular course, Please remove them from Assigned Students Table to continue enrollment</p>
+                    <table className="table w-full">
 
+                        <thead>
+                            <tr>
+                                <th>Sl.</th>
+                                <th>ID</th>
+                                <th>Name</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {
+                                alreadyExist.map((aldAss, i) => <tr key={aldAss._id}>
+                                    <td>{i + 1}</td>
+                                    <td>{aldAss.id}</td>
+                                    <td>{aldAss.name}</td>
+                                </tr>)
 
-            </form>
+                            }
+                        </tbody>
+                    </table>
+
+                </>
+            }
+
             {/* onSubmit={handleSubmit(handleAssignStudents)}  */}
             <h3 className='text-center font-bold text-primary text-xl my-5'>Final Assignment</h3>
-            <form className='flex flex-col items-center justify-center'>
+            <form onSubmit={handleSubmit(handleAssignStudents)} className='flex flex-col items-center justify-center'>
                 {/* Semester selection */}
                 <div className='flex items-center justify-between w-full '>
-                    <select {...register("semester", { required: "Semester selection is Required" })} className="select select-primary w-[45%] ">
+                    {/* <select {...register("semester", { required: "Semester selection is Required" })} className="select select-primary w-[45%] ">
                         <option value=''>Semester</option>
                         {
                             semesters.map(semester => <option key={semester._id} value={semester.value}>{semester.name}</option>)
                         }
-                    </select>
+                    </select> */}
 
                     {/* Section Selection  */}
-                    <select {...register("course", { required: "Section selection is Required" })} className="select select-primary w-[45%] ">
+                    {/* <select {...register("course", { required: "Section selection is Required" })} className="select select-primary w-[45%] "> */}
+                    <select {...register("course", { required: "Section selection is Required" })} className="select select-primary w-full">
                         <option value=''>Select Course</option>
                         {
                             courses.map(course => <option key={course._id} value={course.value}>{course.code}: {course.title}</option>)
@@ -125,9 +178,34 @@ const StudentsDistribution = ({ dataHold }) => {
                     </select>
                 </div>
 
-                {errors.semester && <span className='text-red-600'>{errors.semester?.message}</span>}
+                {/* {errors.semester && <span className='text-red-600'>{errors.semester?.message}</span>} */}
                 {errors.course && <span className='text-red-600'>{errors.course?.message}</span>}
                 {/* {errors.section && <span className='text-red-600'>{errors.section?.message}</span>} */}
+
+
+                <h3 className='text-center font-bold text-primary text-xl my-5'>Assigned Students</h3>
+
+                <table className="table w-full">
+                    <thead>
+                        <tr>
+                            <th>Sl.</th>
+                            <th>Delete</th>
+                            <th>ID</th>
+                            <th>Name</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {
+                            storedStd.map((std, i) => <tr key={std._id}>
+                                <th>{i + 1}</th>
+                                <td><button onClick={() => handleDeleteStd(std._id)} className='btn btn-sm btn-error'>X</button></td>
+                                <td>{std.id}</td>
+                                <td>{std.name}</td>
+                            </tr>)
+
+                        }
+                    </tbody>
+                </table>
 
                 <input type="submit" value="Submit" className='btn btn-primary btn-sm text-white my-5' />
             </form>

@@ -57,6 +57,19 @@ const EntryStudents = () => {
         },
     ]
 
+    const semesters = [
+        {
+            _id: 1,
+            name: 'Spring 2023',
+            value: 'spring-2023'
+        },
+        {
+            _id: 2,
+            name: 'Fall 2022',
+            value: 'fall-2022'
+        }
+    ]
+
     const { register, handleSubmit, formState: { errors } } = useForm();
 
     const imageHostKey = process.env.REACT_APP_imgbb_key;
@@ -66,61 +79,66 @@ const EntryStudents = () => {
         // image uploading handling
         // console.log(data.image.length);
         if (data.image.length === 0) {
-            toast.error('Image need to be required')
+            toast.error('Image Upload Required')
         }
-        const image = data.image[0];
-        const formData = new FormData();
-        // console.log(formData);
-        formData.append('image', image);
-        const url = `https://api.imgbb.com/1/upload?key=${imageHostKey}`;
 
-        fetch(url, {
-            method: 'POST',
-            body: formData
-        })
-            .then(res => res.json())
-            .then(imgData => {
-                if (imgData.success) {
-                    const studentData = {
-                        batch: parseInt(data.batch),
-                        id: parseInt(data.studentId),
-                        name: data.name,
-                        section: data.section,
-                        program: data.program,
-                        email: data.email,
-                        countryCode: parseInt(data.countryCode),
-                        phone: parseInt(data.phone),
-                        photo: imgData.data.url
-                    }
+        else {
+            const image = data.image[0];
+            const formData = new FormData();
+            // console.log(formData);
+            formData.append('image', image);
+            const url = `https://api.imgbb.com/1/upload?key=${imageHostKey}`;
 
-                    fetch('http://localhost:5000/student-list')
-                        .then(res => res.json())
-                        .then(allStudents => {
-                            const alreadyEntry = allStudents.find(student => student.id === studentData.id);
-
-                            if (alreadyEntry) {
-                                toast.error('This ID Already Entered');
-                            }
-
-                            else {
-                                fetch('http://localhost:5000/student-list', {
-                                    method: 'POST',
-                                    headers: {
-                                        'content-type': 'application/json'
-                                    },
-                                    body: JSON.stringify(studentData)
-                                })
-                                    .then(res => res.json())
-                                    .then(result => {
-                                        // console.log(result);
-                                        if (result.acknowledged) {
-                                            toast.success('Entry Successful');
-                                        }
-                                    })
-                            }
-                        })
-                }
+            fetch(url, {
+                method: 'POST',
+                body: formData
             })
+                .then(res => res.json())
+                .then(imgData => {
+                    if (imgData.success) {
+                        const studentData = {
+                            batch: parseInt(data.batch),
+                            id: parseInt(data.studentId),
+                            name: data.name,
+                            section: data.section,
+                            program: data.program,
+                            email: data.email,
+                            countryCode: parseInt(data.countryCode),
+                            phone: parseInt(data.phone),
+                            photo: imgData.data.url,
+                            semester: data.semester,
+                            course: []
+                        }
+
+                        fetch('http://localhost:5000/student-list')
+                            .then(res => res.json())
+                            .then(allStudents => {
+                                const alreadyEntry = allStudents.find(student => student.id === studentData.id && student.semester === studentData.semester && student.batch === studentData.batch);
+
+                                if (alreadyEntry) {
+                                    toast.error(`This ID Already Entered for ${studentData.semester}`);
+                                }
+
+                                else {
+                                    fetch('http://localhost:5000/student-list', {
+                                        method: 'POST',
+                                        headers: {
+                                            'content-type': 'application/json'
+                                        },
+                                        body: JSON.stringify(studentData)
+                                    })
+                                        .then(res => res.json())
+                                        .then(result => {
+                                            // console.log(result);
+                                            if (result.acknowledged) {
+                                                toast.success('Entry Successful');
+                                            }
+                                        })
+                                }
+                            })
+                    }
+                })
+        }
     }
 
 
@@ -141,6 +159,15 @@ const EntryStudents = () => {
                     maxLength: { value: 12, message: "ID must be 12 Digit" },
                 })} placeholder="ID" className="input input-bordered input-primary w-full" />
                 {errors.studentId && <span className='text-red-600'>{errors.studentId?.message}</span>}
+
+                {/* semester selection  */}
+                <select {...register("semester", { required: "Semester selection is Required" })} className="select select-primary w-full ">
+                    <option value=''>Semester</option>
+                    {
+                        semesters.map(semester => <option key={semester._id} value={semester.value}>{semester.name}</option>)
+                    }
+                </select>
+                {errors.semester && <span className='text-red-600'>{errors.semester?.message}</span>}
 
                 {/* Batch selection */}
                 <div className='flex items-center justify-between w-full '>
@@ -163,7 +190,7 @@ const EntryStudents = () => {
 
                     {/* Section Selection  */}
                     <select {...register("section", { required: "Section selection is Required" })} className="select select-primary w-[30%] ">
-                        <option value=''>Select Section</option>
+                        <option value=''>Select Current Section</option>
                         {
                             sections.map(sections => <option key={sections._id} value={sections.section}>{sections.section}</option>)
                         }
