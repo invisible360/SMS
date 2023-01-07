@@ -113,7 +113,7 @@ const EntryStudents = () => {
                         fetch('http://localhost:5000/student-list')
                             .then(res => res.json())
                             .then(allStudents => {
-                                const alreadyEntry = allStudents.find(student => student.id === studentData.id && student.semester === studentData.semester && student.batch === studentData.batch);
+                                const alreadyEntry = allStudents.find(student => student.id === studentData.id && student.semester === studentData.semester);
 
                                 if (alreadyEntry) {
                                     toast.error(`This ID Already Entered for ${studentData.semester}`);
