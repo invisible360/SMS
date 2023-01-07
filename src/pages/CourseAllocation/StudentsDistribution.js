@@ -3,34 +3,14 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import useAppState from '../../hook/useAppState';
-import useListState from '../../hook/useListState';
 
-const StudentsDistribution = ({ dataHold }) => {
-    // console.log(dataHold);
+const StudentsDistribution = () => {
     const navigate = useNavigate();
     const [storedStd, setStroredStd] = useAppState([]);
-    // const [reload, setReload] = useListState();
-
     const [alreadyExist, setAlreadyExist] = useState([]);
+    const [finalAssignemnt, setFinalAssignment] = useState([]);
 
     const { register, handleSubmit, formState: { errors } } = useForm();
-
-
-    const [finalAssignemnt, setFinalAssignment] = useState([]);
-    // const [storedStd, setStoredStd] = useState(dataHold);
-
-    // const semesters = [
-    //     {
-    //         _id: 1,
-    //         name: 'Spring 2023',
-    //         value: 'spring-2023'
-    //     },
-    //     {
-    //         _id: 2,
-    //         name: 'Fall 2022',
-    //         value: 'fall-2022'
-    //     }
-    // ]
 
     const courses = [
         {
@@ -60,21 +40,14 @@ const StudentsDistribution = ({ dataHold }) => {
     ]
 
     const handleDeleteStd = (_id) => {
-        // setReload(true);
         setAlreadyExist([])
 
         const remainingStd = storedStd.filter(e => e._id !== _id);
 
         setStroredStd(remainingStd);
     }
-    // console.log(storedStd);
 
     const handleAssignStudents = data => {
-
-        // const filter = storedStd.filter(e => !e.course.includes(data.course));
-        // console.log(filter);
-        // console.log(data.course);
-        // console.log(storedStd);
         const confirm = window.confirm("Are You Sure Want to Enroll the Assigned Students?");
         if (confirm) {
             setFinalAssignment([storedStd.filter(e => !e.course.includes(data.course)), data.course])
@@ -87,11 +60,9 @@ const StudentsDistribution = ({ dataHold }) => {
         }
 
     }
-    // console.log(finalAssignemnt);
+
 
     useEffect(() => {
-        // console.log(finalAssignemnt);
-        // console.log(alreadyExist);
         if (alreadyExist.length > 0) {
             toast.error("Following IDs are Already Enrolled!");
             return;
@@ -107,22 +78,13 @@ const StudentsDistribution = ({ dataHold }) => {
             })
                 .then(res => res.json())
                 .then(result => {
-                    // console.log(result);
-                    // if (result.message) {
-                    //     toast.success(result.message);
-                        navigate(0);
-                        toast.success ("Successful Operation")
-                    //     setAlreadyExist([])
-                    // }
-                    // else {
-                    //     console.log(result);
-                    //     setAlreadyExist(result)
-                    // }
+                    navigate(0);
+                    toast.success("Successful Operation")
                 })
             // .catch(err => toast.error("Exception Encountered!"))
         }
 
-    }, [finalAssignemnt, navigate])
+    }, [finalAssignemnt, alreadyExist.length, navigate])
 
     return (
         <div className='p-5'>
@@ -156,20 +118,11 @@ const StudentsDistribution = ({ dataHold }) => {
                 </>
             }
 
-            {/* onSubmit={handleSubmit(handleAssignStudents)}  */}
+
             <h3 className='text-center font-bold text-primary text-xl my-5'>Final Assignment</h3>
             <form onSubmit={handleSubmit(handleAssignStudents)} className='flex flex-col items-center justify-center'>
                 {/* Semester selection */}
                 <div className='flex items-center justify-between w-full '>
-                    {/* <select {...register("semester", { required: "Semester selection is Required" })} className="select select-primary w-[45%] ">
-                        <option value=''>Semester</option>
-                        {
-                            semesters.map(semester => <option key={semester._id} value={semester.value}>{semester.name}</option>)
-                        }
-                    </select> */}
-
-                    {/* Section Selection  */}
-                    {/* <select {...register("course", { required: "Section selection is Required" })} className="select select-primary w-[45%] "> */}
                     <select {...register("course", { required: "Section selection is Required" })} className="select select-primary w-full">
                         <option value=''>Select Course</option>
                         {
@@ -177,10 +130,8 @@ const StudentsDistribution = ({ dataHold }) => {
                         }
                     </select>
                 </div>
-
-                {/* {errors.semester && <span className='text-red-600'>{errors.semester?.message}</span>} */}
                 {errors.course && <span className='text-red-600'>{errors.course?.message}</span>}
-                {/* {errors.section && <span className='text-red-600'>{errors.section?.message}</span>} */}
+
 
 
                 <h3 className='text-center font-bold text-primary text-xl my-5'>Assigned Students</h3>

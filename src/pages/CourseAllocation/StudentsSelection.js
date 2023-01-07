@@ -2,12 +2,9 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-hot-toast';
 import { BiRightArrow } from "react-icons/bi";
-import { AiOutlineReload } from "react-icons/ai";
 import useAppState from '../../hook/useAppState';
-import useListState from '../../hook/useListState';
 
-
-const StudentsSelection = ({ sendHoldValue }) => {
+const StudentsSelection = () => {
     const { register, handleSubmit, formState: { errors } } = useForm();
     const { register: registerStd, handleSubmit: handleSubmitStd } = useForm();
 
@@ -62,10 +59,9 @@ const StudentsSelection = ({ sendHoldValue }) => {
         }
     ]
 
-    const [storedStd, setStroredStd] = useAppState([]);
-    // const [reload, setReload] = useListState();
+    const [storedStd, setStroredStd] = useAppState([]); // context
 
-    const [holdValue, setHoldValue] = useState([]);
+
     const [list, setList] = useState([]);
     const [selected, setSelected] = useState({});
     const [isCheck, setIsCheck] = useState([]);
@@ -82,9 +78,7 @@ const StudentsSelection = ({ sendHoldValue }) => {
             program: data.program,
             semester: data.semester
         }
-
         setIsCheckAll(false);
-        // setIsCheck([]);
 
         fetch(`http://localhost:5000/student-list-fetch`, {
             method: 'POST',
@@ -105,27 +99,12 @@ const StudentsSelection = ({ sendHoldValue }) => {
             })
     }
 
-    // const handleStudentAssignment = event => {
-    //     event.preventDefault();
-    //     const data = event.target.asd;
-    //     console.log(data);
-
-    // }
-
     const handleStudentAssignment = data => {
-        // setReload(false);
-        // console.log(data.stdInfo);
-        // console.log(storedStd);
-
         if (isCheckAll) {
             if (list.length === 0) {
                 toast.error("Choose Semester, Batch, section and Program");
             }
-            // setHoldValue([...holdValue, ...list]);
             else {
-
-                // setHoldValue(list);
-                // setStroredStd(holdValue);
                 fetchAssignStd(list);
             }
         }
@@ -140,12 +119,6 @@ const StudentsSelection = ({ sendHoldValue }) => {
                 assingStd.push({ _id: passInfo[i] }
                 )
             }
-            // console.log([...storedStd, ...assingStd]);
-            // console.log(assingStd);
-            // setHoldValue([...holdValue, ...assingStd]);
-            // setHoldValue(assingStd);
-            // setStroredStd(holdValue);
-            // fetchAssignStd(assingStd);
             fetchAssignStd([...storedStd, ...assingStd]);
 
         }
@@ -156,9 +129,7 @@ const StudentsSelection = ({ sendHoldValue }) => {
         const _ids = [];
         // arrayUniqueByKey.map(e => _ids.push(e._id));
         holdValue.map(e => _ids.push(e._id));
-        // console.log(_ids);
-
-
+       
         fetch(`http://localhost:5000/assigned-students`, {
             method: 'POST',
             headers: {
@@ -168,15 +139,10 @@ const StudentsSelection = ({ sendHoldValue }) => {
         })
             .then(res => res.json())
             .then(data => {
-                // console.log(data);
-                // sendHoldValue(data);
                 setStroredStd(data)
-                // setHoldValue ([]);
                 setIsCheck([]);
                 setIsCheckAll(false);
-
             })
-
     }
 
     // sendHoldValue(holdValue);//problem-1**** douvble click a data load hocche
@@ -190,7 +156,6 @@ const StudentsSelection = ({ sendHoldValue }) => {
     };
 
     const handleClick = e => {
-        // setReload(false)
         setIsCheckAll(false);
         const { id, checked } = e.target;
         setIsCheck([...isCheck, id]);
@@ -294,7 +259,6 @@ const StudentsSelection = ({ sendHoldValue }) => {
                     </table>
                 </div>
                 <div className={`text-center ${isCheck.length > 0 || isCheckAll ? 'block' : 'hidden'}`}>
-                    {/* <button className='btn btn-primary btn-circle btn-outline btn-lg'><span className='text-5xl'>{reload ? <AiOutlineReload /> : <BiRightArrow />}</span></button> */}
                     <button className='btn btn-primary btn-circle btn-outline btn-lg'><span className='text-5xl'><BiRightArrow /></span></button>
                 </div>
             </form>
