@@ -6,7 +6,7 @@ import useAppState from '../../hook/useAppState';
 
 const StudentsDistribution = () => {
     const navigate = useNavigate();
-    const [storedStd, setStroredStd] = useAppState([]);
+    const [storedStd, setStroredStd] = useAppState([]);// context
     const [alreadyExist, setAlreadyExist] = useState([]);
     const [finalAssignemnt, setFinalAssignment] = useState([]);
 
@@ -50,7 +50,7 @@ const StudentsDistribution = () => {
     const handleAssignStudents = data => {
         const confirm = window.confirm("Are You Sure Want to Enroll the Assigned Students?");
         if (confirm) {
-            setFinalAssignment([storedStd.filter(e => !e.course.includes(data.course)), data.course])
+            setFinalAssignment([storedStd.filter(e => !e.course.includes(data.course)), data.course]) //oi course bade onno course selection
 
             setAlreadyExist(storedStd.filter(e => e.course.includes(data.course)))
             // setFinalAssignment(storedStd.map(e => e.course.map(c => c !== data.course)))
@@ -84,7 +84,7 @@ const StudentsDistribution = () => {
             // .catch(err => toast.error("Exception Encountered!"))
         }
 
-    }, [finalAssignemnt, alreadyExist.length, navigate])
+    }, [finalAssignemnt])
 
     return (
         <div className='p-5'>
@@ -158,7 +158,7 @@ const StudentsDistribution = () => {
                     </tbody>
                 </table>
 
-                <input type="submit" value="Submit" className='btn btn-primary btn-sm text-white my-5' />
+                <input type="submit" value="Submit" className={`btn btn-primary btn-sm text-white my-5 ${storedStd.length === 0 && 'hidden'}`} />
             </form>
 
         </div>

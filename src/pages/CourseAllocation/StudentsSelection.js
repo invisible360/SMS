@@ -71,6 +71,7 @@ const StudentsSelection = () => {
     const handlefetchStudent = data => {
         const batch = parseInt(data.batch);
         setSelected(data);
+        setIsCheckAll(false);
 
         const studentFetchingInfo = {
             batch: batch,
@@ -78,7 +79,6 @@ const StudentsSelection = () => {
             program: data.program,
             semester: data.semester
         }
-        setIsCheckAll(false);
 
         fetch(`http://localhost:5000/student-list-fetch`, {
             method: 'POST',
@@ -178,8 +178,8 @@ const StudentsSelection = () => {
                 </select>
                 {errors.semester && <span className='text-red-600'>{errors.semester?.message}</span>}
 
-                {/* Batch selection */}
                 <div className='flex items-center justify-between w-full '>
+                {/* Batch selection */}
                     <select {...register("batch", { required: "Batch selection is Required" })} className="select select-primary w-[30%] ">
                         <option value=''>Admitted Batch</option>
                         {

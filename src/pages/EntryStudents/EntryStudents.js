@@ -107,7 +107,17 @@ const EntryStudents = () => {
                             phone: parseInt(data.phone),
                             photo: imgData.data.url,
                             semester: data.semester,
-                            course: []
+                            course: [],
+                            // studentRecord: [
+                                // {
+                                //     course: "",
+                                //     attendance: [],
+                                //     classTest1: 0,
+                                //     classTest2: 0,
+                                //     midTerm: 0,
+                                //     finalTerm: 0
+                                // }
+                            // ]
                         }
 
                         fetch('http://localhost:5000/student-list')

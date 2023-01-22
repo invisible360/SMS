@@ -3,7 +3,7 @@ import { ImCheckmark, ImCross } from "react-icons/im";
 import { format } from 'date-fns';
 
 
-const Attendance = ({ atted, inputCourse, handleAttend }) => {
+const Attendance = ({presentExist, atted, inputCourse, handleAttend, existAttendance }) => {
     const [checkedPresent, setCheckedPresent] = useState(false);
     const [checkedAbsent, setCheckedAbsent] = useState(false);
 
@@ -12,9 +12,10 @@ const Attendance = ({ atted, inputCourse, handleAttend }) => {
         setCheckedAbsent(false)
         status("P");
         const newAttend = {
-            id: atted.id,
-            _id: atted._id,
+            // id: atted.id,
+            studentList_id: atted._id,
             date: atted.studentRecord[0].Attendance[0].date,
+            day: atted.studentRecord[0].Attendance[0].day,
             status: atted.studentRecord[0].Attendance[0].status,
             attendCourse: inputCourse
         }
@@ -26,9 +27,10 @@ const Attendance = ({ atted, inputCourse, handleAttend }) => {
         setCheckedPresent(false)
         status("A");
         const newAttend = {
-            id: atted.id,
-            _id: atted._id,
+            // id: atted.id,
+            studentList_id: atted._id,
             date: atted.studentRecord[0].Attendance[0].date,
+            day: atted.studentRecord[0].Attendance[0].day,
             status: atted.studentRecord[0].Attendance[0].status,
             attendCourse: inputCourse
         }
@@ -36,12 +38,14 @@ const Attendance = ({ atted, inputCourse, handleAttend }) => {
     }
 
     const status = (stat) => {
-
         atted.studentRecord = [
             {
                 Attendance: [
                     {
                         date: format(new Date(), "PP"),
+                        // date: "Jan 28, 2023",
+                        day: format(new Date(), "eeee"),
+                        // day: "Monday",
                         status: stat
                     }
                 ]
@@ -51,29 +55,37 @@ const Attendance = ({ atted, inputCourse, handleAttend }) => {
     }
 
     return (
-        <div className='flex items-center'>
-            <div className="btn-group m-1">
-                <span onClick={presentBtn} className="btn btn-primary text-white" disabled={checkedPresent}>Present</span>
-                <span onClick={absentBtn} className="btn btn-accent text-black" disabled={checkedAbsent}>Absent</span>
-            </div>
-            <div className='flex text-xl ml-5 items-center'>
-
-                <div className='flex '>
-
-                    {
-                        checkedPresent && <span className='mx-2'>P</span>
-                    }
-                    {
-                        checkedAbsent && <span className='mx-2'>A</span>
-                    }
-
+        <>
+        {
+            existAttendance.includes(atted._id) ? 
+            <h3 className='p-4'>Already Given</h3>
+            :
+            <div className='flex items-center'>
+                <div className="btn-group m-1">
+                    <span onClick={presentBtn} className="btn btn-primary text-white" disabled={checkedPresent}>Present</span>
+                    <span onClick={absentBtn} className="btn btn-accent text-black" disabled={checkedAbsent}>Absent</span>
                 </div>
-                <div className='flex'>
-                    <span className={`text-green-500 ${checkedPresent ? 'block' : 'hidden'} `}><ImCheckmark /></span>
-                    <span className={`text-red-500 ${checkedAbsent ? 'block' : 'hidden'}`}><ImCross /></span>
+                <div className='flex text-xl ml-5 items-center'>
+
+                    <div className='flex '>
+
+                        {
+                            checkedPresent && <span className='mx-2'>P</span>
+                        }
+                        {
+                            checkedAbsent && <span className='mx-2'>A</span>
+                        }
+
+                    </div>
+                    <div className='flex'>
+                        <span className={`text-green-500 ${checkedPresent ? 'block' : 'hidden'} `}><ImCheckmark /></span>
+                        <span className={`text-red-500 ${checkedAbsent ? 'block' : 'hidden'}`}><ImCross /></span>
+                    </div>
                 </div>
             </div>
-        </div>
+        }
+
+        </>
     );
 };
 
