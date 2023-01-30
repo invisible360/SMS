@@ -68,18 +68,23 @@ const RegularAttendance = () => {
     const [finalTerm, setFinalterm] = useState([]);
 
     const [courseAttendance, setCourseAttendance] = useState([]);
+    const [marksSummary, setMarksSummary] = useState([]);
     const [onlydate, setOnlyDate] = useState([]);
     const [dateMaxLength, setDateMaxLength] = useState([]);
     const [attendaceDate, setAttendanceDate] = useState([]);
+    const [dailyPresent, setDailyPresent] = useState([]);
+
+
+    const [submitDisabled, setSubmitDisabled] = useState(false)
 
 
 
     const onChangeMade = () => {
         setStudnts([]);
         setInputMode('Not Selected');
-        setCourseAttendance([])
+        setCourseAttendance([]);
+        setMarksSummary([])
     }
-
 
     const handleSemesterFetching = (e) => {
         const getSemester = e.target.value;
@@ -114,6 +119,7 @@ const RegularAttendance = () => {
 
         setInputMode('Not Selected');
         e.preventDefault();
+
         const form = e.target;
         const semester = form.semester.value;
         const program = form.program.value;
@@ -121,9 +127,6 @@ const RegularAttendance = () => {
         const course = form.course.value;
 
         setInputCourse(course)
-        // setInputProgram(program)
-        // setInputSemester(semester)
-        // setInputSection(section)
 
         if (semester === '' || program === '' || section === '' || course === '') {
             toast.error('All Input Selection is Mandatory')
@@ -149,7 +152,6 @@ const RegularAttendance = () => {
 
                         setStudnts(data);
                     }
-                    // setNotFound(true);
                 })
         }
     }
@@ -164,17 +166,44 @@ const RegularAttendance = () => {
         })
             .then(res => res.json())
             .then(data => {
-                console.log(data);
+                // console.log(data);
                 if (data.message) {
                     toast.error(data.message)
                 }
                 else {
                     toast.success(`${marksType} Marks Successfully Submitted`);
-                    navigate(0);
+                    // navigate(0);
                     // navigate('/');
+
+                    fetch('http://localhost:5000/summery-attendance/v2', {
+                        method: "POST",
+                        headers: {
+                            "content-type": "application/json"
+                        },
+                        body: JSON.stringify([studnts, inputCourse])
+                    })
+                        .then(res => res.json())
+                        .then(data => {
+                            const marks = data[1]
+                            // console.log(marks);
+                            // console.log(studnts);
+
+                            studnts.map(e => e['allMarks'] = []);
+                            for (var i = 0; i < studnts.length; i++) {
+                                for (var j = 0; j < marks.length; j++) {
+                                    if (marks[j].studentList_id === studnts[i]._id) {
+                                        // ({...studnts[i], marks[j]})
+                                        studnts[i].allMarks.push(marks[j])
+                                    }
+                                }
+                            }
+                            // console.log(studnts);
+                            setMarksSummary(studnts);
+                            setSubmitDisabled(true);
+                        })
+
                 }
             })
-
     }
 
     // Most Important Function 
@@ -285,7 +314,7 @@ const RegularAttendance = () => {
             .then(res => res.json())
             .then(data => {
                 const existAttend = data.filter(e => e.date === format(new Date(), "PP") && e.attendCourse === inputCourse);
-                // const existAttend = data.filter(e => e.date === 'Jan 28, 2023' && e.attendCourse === inputCourse);
+                // const existAttend = data.filter(e => e.date === 'Jan 30, 2023' && e.attendCourse === inputCourse);
                 const existIds = existAttend.map(e => e.studentList_id);
                 setExistAttendance(existIds);
 
@@ -317,32 +346,10 @@ const RegularAttendance = () => {
     }, [inputCourse])
 
 
-
     const handleSubmission = e => {
         e.preventDefault();
+        // console.log(ct1List);
 
-        fetch(`http://localhost:5000/summery-attendance`)
-            .then(res => res.json())
-            .then(data => {
-
-                const summStdnt = data.filter(e1 => studnts.find(e2 => e2._id === e1._id));
-                const courseFilter = summStdnt.filter(e => e.course.includes(inputCourse))
-                console.log(courseFilter);
-                setCourseAttendance(courseFilter)
-
-                const maxLengthArray = summStdnt.map(e => e.attendance.length)
-                const maxLength = Math.max(...maxLengthArray)
-                setDateMaxLength(maxLength)
-
-                const allDate = summStdnt.map(e => e.attendance)
-
-                const arr1d = [].concat.apply([], allDate);
-                const onlyDate = [...new Set(arr1d.map(item => item.date))];
-                const uniqueDate = [...new Map(arr1d.map(item => [item['date'], item])).values()];
-
-                setOnlyDate(onlyDate)
-                setAttendanceDate(uniqueDate)
-            })
 
         if (presentList.length > 0) {
 
@@ -357,34 +364,48 @@ const RegularAttendance = () => {
                 .then(result => {
                     // console.log(result);
                     if (result.acknowledged) {
-                        toast.success(`Attendace Submitted for ${format(new Date(), "PP")}`)
-                        // navigate('/');
-                        // navigate(0)
-                        // e.target.reset();
+                        toast.success(`Attendace Submitted for ${format(new Date(), "PP")}`);
 
-                        fetch(`http://localhost:5000/summery-attendance`)
+
+                        // oraginzing data
+                        fetch('http://localhost:5000/summery-attendance/v2', {
+                            method: "POST",
+                            headers: {
+                                "content-type": "application/json"
+                            },
+                            body: JSON.stringify([studnts, inputCourse])
+                        })
                             .then(res => res.json())
                             .then(data => {
+                                const attendanceCourse = data[0]
 
-                                const summStdnt = data.filter(e1 => studnts.find(e2 => e2._id === e1._id))
-                                setCourseAttendance(summStdnt)
+                                studnts.map(e => e['attendance'] = []);
 
-                                const maxLengthArray = summStdnt.map(e => e.attendance.length)
+                                for (var i = 0; i < studnts.length; i++) {
+                                    for (var j = 0; j < attendanceCourse.length; j++) {
+                                        if (attendanceCourse[j].studentList_id === studnts[i]._id) {
+                                            studnts[i].attendance.push(attendanceCourse[j])
+                                        }
+                                    }
+                                }
+                                setCourseAttendance(studnts);
+
+                                const allDate = studnts.map(e => e.attendance)
+                                const arr1d = [].concat.apply([], allDate);
+                                const uniqueDate = [...new Map(arr1d.map(item => [item['date'], item])).values()];
+                                setAttendanceDate(uniqueDate);
+
+                                const onlyDate = [...new Set(arr1d.map(item => item.date))];
+                                setOnlyDate(onlyDate);
+
+                                const maxLengthArray = studnts.map(e => e.attendance.length)
                                 const maxLength = Math.max(...maxLengthArray)
                                 setDateMaxLength(maxLength)
 
-                                const allDate = summStdnt.map(e => e.attendance)
-
-                                const arr1d = [].concat.apply([], allDate);
-                                const onlyDate = [...new Set(arr1d.map(item => item.date))];
-                                const uniqueDate = [...new Map(arr1d.map(item => [item['date'], item])).values()];
-
-                                setOnlyDate(onlyDate)
-                                setAttendanceDate(uniqueDate)
+                                const present = onlyDate.map(e => attendanceCourse.filter(e2 => e2.date === e && e2.status === "P"))
+                                setDailyPresent(present);
+                                setSubmitDisabled(true);
                             })
-
-
-
 
                     }
                 })
@@ -392,10 +413,8 @@ const RegularAttendance = () => {
 
         }
 
-
         else if (ct1List.length > 0) {
             markAPI(ct1List, "CT-1")
-            // e.target.reset();
         }
 
         else if (ct2List.length > 0) {
@@ -414,6 +433,31 @@ const RegularAttendance = () => {
         else {
             toast.error("No Input Action taken")
         }
+
+    }
+
+    const handleAttendanceMarkSubmission = () => {
+        const attenMark = [];
+
+        courseAttendance.map(e => attenMark.push({ course: inputCourse, studentList_id: e._id, attendanceMark: parseInt((e.attendance.filter(e2 => e2.status === "P").length / onlydate.length) * 10) }))
+       
+        fetch(`http://localhost:5000/marks-record`, {
+            method: "PUT",
+            headers: {
+                "content-type": "application/json"
+            },
+            body: JSON.stringify(attenMark)
+        })
+            .then(res => res.json())
+            .then(data => {
+                // console.log(data);
+                if (data.message) {
+                    toast.error(data.message)
+                }
+                else {
+                    toast.success(`Final Attendance Marks Successfully Submitted`);
+                }
+            })
 
     }
 
@@ -459,8 +503,6 @@ const RegularAttendance = () => {
             </form>
 
 
-
-
             <div className='w-[70%] mx-auto'>
                 {
                     studnts.length > 0 && <p className='text-xl text-center text-green-600 mb-5'>Input Mode: {inputMode === 'ATTENDANCE' ? `Attendance for ${format(new Date(), "PP")}` : inputMode}</p>
@@ -498,8 +540,6 @@ const RegularAttendance = () => {
                         </div>
                     }
 
-
-
                     {/* Input Action */}
                     <div>
                         <div className={`dropdown dropdown-hover dropdown-left ${studnts.length === 0 ? 'hidden' : ''} `}>
@@ -515,6 +555,7 @@ const RegularAttendance = () => {
                                                 setCt2List([])
                                                 setMidterm([])
                                                 setFinalterm([])
+                                                // setSubmitDisabled (false)
                                             }}>{input.value}</span>
                                         </li>)
                                 }
@@ -543,8 +584,7 @@ const RegularAttendance = () => {
 
                                 {
                                     inputMode === 'CLASS TEST - 2' &&
-                                    studnts.map((ct2, i) => <input onBlur={handleCT2} key={i} id={ct2._id} type="number" placeholder={existCT2.includes(ct2._id) ? "Already Given" : "CT-2"} className="input input-bordered text-center max-w-xs input-primary m-1
-                                    " disabled={existCT2.includes(ct2._id)} />)
+                                    studnts.map((ct2, i) => <input onBlur={handleCT2} key={i} id={ct2._id} type="number" placeholder={existCT2.includes(ct2._id) ? "Already Given" : "CT-2"} className="input input-bordered text-center max-w-xs input-primary m-1" disabled={existCT2.includes(ct2._id)} />)
                                 }
 
                                 {
@@ -557,10 +597,9 @@ const RegularAttendance = () => {
                                     studnts.map((final, i) => <input onBlur={handleFinal} key={i} id={final._id} type="number" placeholder={existFinal.includes(final._id) ? "Already Given" : "Final Term"} className="input input-bordered text-center max-w-xs input-primary m-1" disabled={existFinal.includes(final._id)} />)
                                 }
                             </div>
-
                             {
                                 inputMode !== 'Not Selected' &&
-                                <input type="submit" className='btn btn-warning mt-1 w-[15.5rem]' value="Submit" />
+                                <input type="submit" className='btn btn-warning mt-1 w-[15.5rem]' disabled={submitDisabled} value="Submit" />
                             }
                         </form>
 
@@ -570,7 +609,7 @@ const RegularAttendance = () => {
                 {
                     courseAttendance.length > 0 &&
                     <>
-                        <h1 className='text-center text-3xl font-bold my-5'>Summary</h1>
+                        <h1 className='text-center text-3xl font-bold my-5'>Attendane Summary</h1>
                         <div className="overflow-x-auto my-10">
                             <table className="table table-compact table-zebra w-full">
                                 <thead>
@@ -579,7 +618,7 @@ const RegularAttendance = () => {
                                         <th>Batch</th>
                                         <th>Name</th>
                                         {
-                                            attendaceDate.map((e, i) => <th key={i} className='text-center p-3'><p>{e.date}</p> <p>{e.day}</p></th>)
+                                            attendaceDate.map((e, i) => <th key={i} className={`text-center p-3 ${e.date === format(new Date(), "PP") && 'bg-purple-700 text-white'}`}><p>{e.date}</p> <p>{e.day}</p></th>)
                                         }
                                         <th className='text-center p-3'>Total Class</th>
                                         <th className='text-center p-3'>Total Present</th>
@@ -598,21 +637,22 @@ const RegularAttendance = () => {
                                                 <td>{e.batch} {e.section} {e.program}</td>
                                                 <td>{e.name}</td>
                                                 {
-                                                    onlydate.length !== e.attendance.length && [...Array(dateMaxLength - e.attendance.length).keys()].map((e, i) => <td key={i} className="text-center text-gray-200">N/A</td>)
+                                                    onlydate.length !== e.attendance.length && [...Array(dateMaxLength - e.attendance.length).keys()].map((e, i) => <td key={i} className="text-center text-gray-200">N/A ≈ <span className='text-red-600'>A</span></td>)
 
-                                                }
-                                                {
-                                                    e.attendance.map((status) => <th key={status._id} className={`text-center ${status.status === 'A' ? 'text-red-600' : 'text-green-600'}`}>{status.attendCourse=== inputCourse && status.status}</th>)
                                                 }
                                                 {/* {
-                                                    e.attendance.map((status) => <td key={status._id} className='text-center'>
-                                                        {status.date}<br></br>{status.status}</td>)
+                                                    e.attendance.map((status) => <th key={status._id} className={`text-center ${status.status === 'A' ? 'text-red-600' : 'text-green-600'}`}>{status.date}<br></br></th>)
                                                 } */}
+                                                {
+                                                    e.attendance.map((status) => <td key={status._id} className={`text-center ${status.status === 'A' ? 'text-red-600' : 'text-green-600'}`}>
+                                                        {status.status}</td>)
+                                                }
                                                 <td className='text-center'>{onlydate.length}</td>
                                                 <td className='text-center'>{e.attendance.filter(e => e.status === "P").length}</td>
-                                                <td className='text-center'>{e.attendance.filter(e => e.status === "A").length}</td>
-                                                <td className={`text-center ${((e.attendance.filter(e => e.status === "P").length / onlydate.length) * 100).toFixed(2) < 50 ? 'text-red-600' : 'text-green-600'}`}>{((e.attendance.filter(e => e.status === "P").length / onlydate.length) * 100).toFixed(2)}%</td>
 
+                                                <td className='text-center'>{e.attendance.filter(e => e.status === "A").length + [...Array(dateMaxLength - e.attendance.length).keys()].length}</td>
+
+                                                <td className={`text-center ${((e.attendance.filter(e => e.status === "P").length / onlydate.length) * 100).toFixed(2) < 50 ? 'text-red-600' : 'text-green-600'}`}>{((e.attendance.filter(e => e.status === "P").length / onlydate.length) * 100).toFixed(2)}%</td>
 
 
                                                 <td className='text-center'>{
@@ -652,13 +692,13 @@ const RegularAttendance = () => {
                                         <th colSpan="2" className='text-center'>Batch</th>
 
                                         {
-                                            onlydate.map((e, i) => <th className='text-center'>P: <br />A: <br /><br />
+                                            dailyPresent.map((e, i) => <th key={i} className='text-center'>P : {e.length} <br />A : {studnts.length - e.length} <br /><br />
                                                 <label htmlFor="my-modal-6" className="text-xs btn btn-lg btn-circle btn-primary">Daily <br /> Report</label>
                                             </th>)
                                         }
 
 
-                                        <th colSpan='5' className='text-center  border p-2'>
+                                        <th colSpan='4' className='text-center  border p-2'>
                                             <p>Marking System</p>
                                             <div className='grid grid-cols-2'>
                                                 <div>
@@ -678,12 +718,64 @@ const RegularAttendance = () => {
                                             </div>
                                             <p>0-10% = 0.5</p>
                                         </th>
+
+                                        <th>
+                                            <div onClick={handleAttendanceMarkSubmission} className='flex flex-col items-center justify-center btn btn-info'>
+                                                <p>Submit</p>
+                                                <p>Attendance</p>
+                                                <p>Mark</p>
+                                            </div>
+                                        </th>
                                     </tr>
                                 </tfoot>
                             </table>
                         </div>
+                        <button onClick={() => navigate('/')} className='btn btn-outline btn-success mx-auto my-5 flex items-center justify-center'>All Okey</button>
                     </>
                 }
+
+                {
+                    marksSummary.length > 0 &&
+                    <>
+                        <h1 className='text-center text-3xl font-bold my-5'>Marks Summary</h1>
+                        <div className="overflow-x-auto my-10">
+                            <table className="table table-compact table-zebra w-full">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Batch</th>
+                                        <th>Name</th>
+                                        <th className='text-center p-3'>Class Test-1 (10)</th>
+                                        <th className='text-center p-3'>Class Test-2 (10)</th>
+                                        <th className='text-center p-3'>Class Test Final (Avg. = 10)</th>
+                                        <th className='text-center p-3'>Mid Term (30)</th>
+                                        <th className='text-center p-3'>Final Term (50)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    {
+                                        marksSummary.map(e =>
+                                            <tr key={e._id}>
+
+                                                <th>{e.id}</th>
+                                                <td>{e.batch} {e.section} {e.program}</td>
+                                                <td>{e.name}</td>
+                                                <td className='text-center'>{e.allMarks[0].classTest1}</td>
+                                                <td className='text-center'>{e.allMarks[0].classTest2}</td>
+                                                <td className='text-center'>{(e.allMarks[0].classTest1 + e.allMarks[0].classTest2) / 2}</td>
+                                                <td className='text-center'>{e.allMarks[0].midTerm}</td>
+                                                <td className='text-center'>{e.allMarks[0].finalTerm}</td>
+                                            </tr>)
+                                    }
+
+                                </tbody>
+                            </table>
+                        </div>
+                        <button onClick={() => navigate('/')} className='btn btn-outline btn-success mx-auto my-5 flex items-center justify-center'>All Okey</button>
+                    </>
+                }
+
 
 
 

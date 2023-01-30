@@ -3,7 +3,7 @@ import { ImCheckmark, ImCross } from "react-icons/im";
 import { format } from 'date-fns';
 
 
-const Attendance = ({presentExist, atted, inputCourse, handleAttend, existAttendance }) => {
+const Attendance = ({ presentExist, atted, inputCourse, handleAttend, existAttendance }) => {
     const [checkedPresent, setCheckedPresent] = useState(false);
     const [checkedAbsent, setCheckedAbsent] = useState(false);
 
@@ -43,7 +43,7 @@ const Attendance = ({presentExist, atted, inputCourse, handleAttend, existAttend
                 Attendance: [
                     {
                         date: format(new Date(), "PP"),
-                        // date: "Jan 28, 2023",
+                        // date: "Jan 30, 2023",
                         day: format(new Date(), "eeee"),
                         // day: "Monday",
                         status: stat
@@ -56,34 +56,34 @@ const Attendance = ({presentExist, atted, inputCourse, handleAttend, existAttend
 
     return (
         <>
-        {
-            existAttendance.includes(atted._id) ? 
-            <h3 className='p-4'>Already Given</h3>
-            :
-            <div className='flex items-center'>
-                <div className="btn-group m-1">
-                    <span onClick={presentBtn} className="btn btn-primary text-white" disabled={checkedPresent}>Present</span>
-                    <span onClick={absentBtn} className="btn btn-accent text-black" disabled={checkedAbsent}>Absent</span>
-                </div>
-                <div className='flex text-xl ml-5 items-center'>
+            {
+                existAttendance.includes(atted._id) ?
+                    <h3 className='p-4'>Already Given</h3>
+                    :
+                    <div className='flex items-center'>
+                        <div className="btn-group m-1">
+                            <span onClick={presentBtn} className="btn btn-primary text-white" disabled={checkedPresent}>Present</span>
+                            <span onClick={absentBtn} className="btn btn-accent text-black" disabled={checkedAbsent}>Absent</span>
+                        </div>
+                        <div className='flex text-xl ml-5 items-center'>
 
-                    <div className='flex '>
+                            <div className='flex '>
 
-                        {
-                            checkedPresent && <span className='mx-2'>P</span>
-                        }
-                        {
-                            checkedAbsent && <span className='mx-2'>A</span>
-                        }
+                                {
+                                    checkedPresent && <span className='mx-2'>P</span>
+                                }
+                                {
+                                    checkedAbsent && <span className='mx-2'>A</span>
+                                }
 
+                            </div>
+                            <div className='flex'>
+                                <span className={`text-green-500 ${checkedPresent ? 'block' : 'hidden'} `}><ImCheckmark /></span>
+                                <span className={`text-red-500 ${checkedAbsent ? 'block' : 'hidden'}`}><ImCross /></span>
+                            </div>
+                        </div>
                     </div>
-                    <div className='flex'>
-                        <span className={`text-green-500 ${checkedPresent ? 'block' : 'hidden'} `}><ImCheckmark /></span>
-                        <span className={`text-red-500 ${checkedAbsent ? 'block' : 'hidden'}`}><ImCross /></span>
-                    </div>
-                </div>
-            </div>
-        }
+            }
 
         </>
     );
