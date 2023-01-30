@@ -65,7 +65,7 @@ const Attendance = ({ presentExist, atted, inputCourse, handleAttend, existAtten
                             <span onClick={presentBtn} className="btn btn-primary text-white" disabled={checkedPresent}>Present</span>
                             <span onClick={absentBtn} className="btn btn-accent text-black" disabled={checkedAbsent}>Absent</span>
                         </div>
-                        <div className='flex text-xl ml-5 items-center'>
+                        <div className='md:flex text-xl ml-5 items-center hidden'>
 
                             <div className='flex '>
 

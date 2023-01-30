@@ -9,8 +9,8 @@ const CourseAllocation = () => {
 
     return (
         <div className='min-h-screen'>
-            <h1 className='text-center text-3xl font-bold my-5'>Course Allocation</h1>
-            <section className='grid grid-cols-2 gap-5'>
+            <h1 className='text-center text-3xl font-bold md:my-5'>Course Allocation</h1>
+            <section className='grid md:grid-cols-2 gap-5'>
                 <StudentsSelection></StudentsSelection>
                 <StudentsDistribution></StudentsDistribution>
             </section>

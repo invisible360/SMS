@@ -477,21 +477,21 @@ const RegularAttendance = () => {
 
                 </div>
                 {/* Program, Section and Course Selection  */}
-                <div className='flex justify-between my-5'>
-                    <select onChange={onChangeMade} className="select select-primary mb-5 w-1/4" name='program'>
+                <div className='flex md:flex-row flex-col justify-between md:my-5'>
+                    <select onChange={onChangeMade} className="select select-primary mb-5 w-full md:w-1/4" name='program'>
                         <option value=''>{program.length !== 0 ? 'Program' : 'None'}</option>
                         {
                             program.map((prog, i) => <option key={i} value={prog}>{prog}</option>)
                         }
                     </select>
-                    <select onChange={onChangeMade} className="select select-primary mb-5 w-1/4" name='section'>
+                    <select onChange={onChangeMade} className="select select-primary mb-5 w-full md:w-1/4" name='section'>
                         <option value=''>{section.length !== 0 ? 'Section' : 'None'}</option>
                         {
                             section.map((sec, i) => <option key={i} value={sec}>{sec}</option>)
                         }
                     </select>
 
-                    <select onChange={onChangeMade} className="select select-primary mb-5 w-1/4" name='course'>
+                    <select onChange={onChangeMade} className="select select-primary mb-5 w-full md:w-1/4" name='course'>
                         <option value=''>{course.length !== 0 ? 'Course' : 'Course Not Assigned yet'}</option>
                         {
                             course.map((crs, i) => <option key={i} value={crs}>{crs}</option>)
@@ -516,7 +516,7 @@ const RegularAttendance = () => {
                             <table className="table">
                                 <thead>
                                     <tr>
-                                        <th className='text-lg'>Batch</th>
+                                        <th className='text-lg hidden md:block'>Batch</th>
                                         <th className='text-lg'>Name</th>
                                         <th className='text-lg'>ID</th>
                                     </tr>
@@ -530,7 +530,7 @@ const RegularAttendance = () => {
                                             :
                                             studnts.map((stdnt, i) =>
                                                 <tr key={i}>
-                                                    <td>{stdnt.batch} {stdnt.section} {stdnt.program}</td>
+                                                    <td className='hidden md:block'>{stdnt.batch} {stdnt.section} {stdnt.program}</td>
                                                     <td>{stdnt.name}</td>
                                                     <td>{stdnt.id}</td>
                                                 </tr>)
@@ -543,7 +543,7 @@ const RegularAttendance = () => {
                     {/* Input Action */}
                     <div>
                         <div className={`dropdown dropdown-hover dropdown-left ${studnts.length === 0 ? 'hidden' : ''} `}>
-                            <label tabIndex={0} className="btn btn-info m-1"><p className='text-2xl w-52 flex items-center justify-center'><MdAddCircle></MdAddCircle></p></label>
+                            <label tabIndex={0} className="btn btn-info m-1"><p className='text-2xl w-28 md:w-52 flex items-center justify-center'><MdAddCircle></MdAddCircle></p></label>
                             <ul tabIndex={0} className="dropdown-content menu p-2 shadow bg-info text-black rounded-box w-52">
                                 {
                                     inputAction.map((input, i) =>
@@ -579,27 +579,27 @@ const RegularAttendance = () => {
 
                                 {
                                     inputMode === 'CLASS TEST - 1' &&
-                                    studnts.map((ct1, i) => <input onBlur={handleCT1} key={i} id={ct1._id} type="number" placeholder={existCT1.includes(ct1._id) ? "Already Given" : "CT-1"} className="input input-bordered text-center max-w-xs input-primary m-1" disabled={existCT1.includes(ct1._id)} />)
+                                    studnts.map((ct1, i) => <input onBlur={handleCT1} key={i} id={ct1._id} type="number" placeholder={existCT1.includes(ct1._id) ? "Already Given" : "CT-1"} className="input input-bordered text-center w-36 md:max-w-xs input-primary m-1" disabled={existCT1.includes(ct1._id)} />)
                                 }
 
                                 {
                                     inputMode === 'CLASS TEST - 2' &&
-                                    studnts.map((ct2, i) => <input onBlur={handleCT2} key={i} id={ct2._id} type="number" placeholder={existCT2.includes(ct2._id) ? "Already Given" : "CT-2"} className="input input-bordered text-center max-w-xs input-primary m-1" disabled={existCT2.includes(ct2._id)} />)
+                                    studnts.map((ct2, i) => <input onBlur={handleCT2} key={i} id={ct2._id} type="number" placeholder={existCT2.includes(ct2._id) ? "Already Given" : "CT-2"} className="input input-bordered text-center w-36 md:max-w-xs input-primary m-1" disabled={existCT2.includes(ct2._id)} />)
                                 }
 
                                 {
                                     inputMode === 'MID TERM' &&
-                                    studnts.map((mid, i) => <input onBlur={handleMid} key={i} id={mid._id} type="number" placeholder={existMid.includes(mid._id) ? "Already Given" : "Mid Term"} className="input input-bordered text-center max-w-xs input-primary m-1" disabled={existMid.includes(mid._id)} />)
+                                    studnts.map((mid, i) => <input onBlur={handleMid} key={i} id={mid._id} type="number" placeholder={existMid.includes(mid._id) ? "Already Given" : "Mid Term"} className="input input-bordered text-center md w-36 md:max-w-xs input-primary m-1" disabled={existMid.includes(mid._id)} />)
                                 }
 
                                 {
                                     inputMode === 'FINAL TERM' &&
-                                    studnts.map((final, i) => <input onBlur={handleFinal} key={i} id={final._id} type="number" placeholder={existFinal.includes(final._id) ? "Already Given" : "Final Term"} className="input input-bordered text-center max-w-xs input-primary m-1" disabled={existFinal.includes(final._id)} />)
+                                    studnts.map((final, i) => <input onBlur={handleFinal} key={i} id={final._id} type="number" placeholder={existFinal.includes(final._id) ? "Already Given" : "Final Term"} className="input input-bordered text-center w-36 md:max-w-xs input-primary m-1" disabled={existFinal.includes(final._id)} />)
                                 }
                             </div>
                             {
                                 inputMode !== 'Not Selected' &&
-                                <input type="submit" className='btn btn-warning mt-1 w-[15.5rem]' disabled={submitDisabled} value="Submit" />
+                                <input type="submit" className='btn btn-warning mt-1 md:w-[15.5rem]' disabled={submitDisabled} value="Submit" />
                             }
                         </form>
 

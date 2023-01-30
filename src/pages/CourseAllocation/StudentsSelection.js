@@ -165,7 +165,7 @@ const StudentsSelection = () => {
     };
 
     return (
-        <div className='p-5'>
+        <div className='p-5 w-[85%] md:w-full'>
             <h3 className='text-center font-bold text-primary text-xl my-5'>Students Selection</h3>
             <form onSubmit={handleSubmit(handlefetchStudent)} className='flex flex-col items-center justify-center'>
                 
@@ -178,9 +178,9 @@ const StudentsSelection = () => {
                 </select>
                 {errors.semester && <span className='text-red-600'>{errors.semester?.message}</span>}
 
-                <div className='flex items-center justify-between w-full '>
+                <div className='md:flex items-center justify-between w-full '>
                 {/* Batch selection */}
-                    <select {...register("batch", { required: "Batch selection is Required" })} className="select select-primary w-[30%] ">
+                    <select {...register("batch", { required: "Batch selection is Required" })} className="select select-primary w-full md:w-[30%] ">
                         <option value=''>Admitted Batch</option>
                         {
                             batches.map(batch => <option key={batch._id} value={batch.mainBatch}>{batch.mainBatch}</option>)
@@ -188,7 +188,7 @@ const StudentsSelection = () => {
                     </select>
 
                     {/* Day and Evening Selection  */}
-                    <div className='flex items-center w-[35%] space-x-4'>
+                    <div className='flex items-center justify-center my-5 md:w-[35%] space-x-4'>
                         <label className="label-text font-bold">Day</label>
                         <input type="radio" {...register("program", { required: "Program selection is Required" })} value='Day' className="radio checked:bg-blue-500" />
 
@@ -198,7 +198,7 @@ const StudentsSelection = () => {
                     </div>
 
                     {/* Section Selection  */}
-                    <select {...register("section", { required: "Section selection is Required" })} className="select select-primary w-[30%] ">
+                    <select {...register("section", { required: "Section selection is Required" })} className="select select-primary w-full md:w-[30%] ">
                         <option value=''>Select Section</option>
                         {
                             sections.map(sections => <option key={sections._id} value={sections.section}>{sections.section}</option>)
@@ -221,13 +221,14 @@ const StudentsSelection = () => {
                         <p><span className='font-bold text-blue-600'>Section:</span> {selected.section}</p>
                         <p><span className='font-bold text-blue-600'>Program:</span> {selected.program}</p>
                     </div>
+
                     <table className="table w-full">
                         <thead>
                             <tr>
                                 <th>Sl.</th>
                                 <th className='flex items-center space-x-3'><input type="checkbox" className="checkbox"
                                     onChange={handleSelectAll}
-                                    checked={isCheckAll} /><span>Select All</span></th>
+                                    checked={isCheckAll} /><span className='hidden md:block'>Select All</span></th>
                                 <th>ID</th>
                                 <th>Name</th>
                             </tr>
@@ -257,7 +258,9 @@ const StudentsSelection = () => {
                             }
                         </tbody>
                     </table>
+
                 </div>
+
                 <div className={`text-center ${isCheck.length > 0 || isCheckAll ? 'block' : 'hidden'}`}>
                     <button className='btn btn-primary btn-circle btn-outline btn-lg'><span className='text-5xl'><BiRightArrow /></span></button>
                 </div>

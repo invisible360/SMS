@@ -35,7 +35,7 @@ const Management = () => {
         <div className='mt-10'>
 
             <h1 className="text-3xl font-bold text-center my-5">Students Management Features</h1>
-            <div className='grid grid-cols-4 gap-5 m-5'>
+            <div className='grid grid-cols-2 md:grid-cols-4 gap-5 m-5'>
                 {
                     features.map(feature => <Feature
                         key={feature._id}

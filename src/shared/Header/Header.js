@@ -11,13 +11,13 @@ const Header = ({ handleDarkMode }) => {
                     <div className="mb-10 shadow-lg px-2">
                         <div className='flex items-center justify-between pt-5'>
                             <Link to='/'>
-                                <h2 className="text-4xl tracking-widest font-bold">STUDENT MANAGEMENT SYSTEM</h2>
+                                <h2 className="text-xl md:text-4xl md:tracking-widest font-bold">STUDENT MANAGEMENT SYSTEM</h2>
                             </Link>
                             <p className='space-x-2 items-center flex'>
-                                <span>Dark</span><input onClick={handleDarkMode} type="checkbox" className="toggle" /><span>Light</span>
+                                <span className='hidden md:block'>Dark</span><input onClick={handleDarkMode} type="checkbox" className="toggle" /><span className='hidden md:block'>Light</span>
                             </p>
                         </div>
-                        <div className="space-x-2 py-3">
+                        <div className="space-x-2 py-1 md:py-3">
                             <Typewriter
                                 options={{
                                     strings: [`Developed by- <b>Zakir Hossain<sub className="text-xs ml-1">_invisible_360</sub></b>`],

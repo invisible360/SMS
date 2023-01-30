@@ -7,7 +7,7 @@ import { GrMail } from "react-icons/gr";
 
 const Bio = () => {
     return (
-        <div className='flex items-center'>
+        <div className='flex items-center hidden'>
             <div className="avatar p-2">
                 <div className="w-36 h-44 rounded-xl">
                     <img src={profilePhoto} alt="" />

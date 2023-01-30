@@ -327,12 +327,12 @@ const SeeBatchReport = () => {
 
                                     {
                                         dailyPresent.map((e, i) => <th key={i} className='text-center'>P : {e.length} <br />A : {studnts.length - e.length} <br /><br />
-                                            <label htmlFor="my-modal-6" className="text-xs btn btn-lg btn-circle btn-primary">Daily <br /> Report</label>
+                                            {/* <label htmlFor="my-modal-6" className="text-xs btn btn-lg btn-circle btn-primary">Daily <br /> Report</label> */}
                                         </th>)
                                     }
 
 
-                                    <th colSpan='5' className='text-center  border p-2'>
+                                    <th colSpan='5' className='text-center  border p-1'>
                                         <p>Attendance Marking System</p>
                                         <div className='grid grid-cols-2'>
                                             <div>
@@ -354,7 +354,7 @@ const SeeBatchReport = () => {
                                     </th>
                                     <th colSpan='2'></th>
                                     
-                                    <th colSpan='6' className='text-center  border p-2'>
+                                    <th colSpan='6' className='text-center  border p-1'>
                                         <p>Grading System</p>
                                         <div className='grid grid-cols-2'>
                                             <div>

@@ -87,7 +87,7 @@ const StudentsDistribution = () => {
     }, [finalAssignemnt])
 
     return (
-        <div className='p-5'>
+        <div className='p-5 w-[85%] md:w-full'>
 
             {
                 alreadyExist.length > 0 &&
@@ -120,7 +120,7 @@ const StudentsDistribution = () => {
 
 
             <h3 className='text-center font-bold text-primary text-xl my-5'>Final Assignment</h3>
-            <form onSubmit={handleSubmit(handleAssignStudents)} className='flex flex-col items-center justify-center'>
+            <form onSubmit={handleSubmit(handleAssignStudents)} className=' overflow-auto flex flex-col items-center justify-center'>
                 {/* Semester selection */}
                 <div className='flex items-center justify-between w-full '>
                     <select {...register("course", { required: "Section selection is Required" })} className="select select-primary w-full">
@@ -136,27 +136,31 @@ const StudentsDistribution = () => {
 
                 <h3 className='text-center font-bold text-primary text-xl my-5'>Assigned Students</h3>
 
-                <table className="table w-full">
-                    <thead>
-                        <tr>
-                            <th>Sl.</th>
-                            <th>Delete</th>
-                            <th>ID</th>
-                            <th>Name</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {
-                            storedStd.map((std, i) => <tr key={std._id}>
-                                <th>{i + 1}</th>
-                                <td><button onClick={() => handleDeleteStd(std._id)} className='btn btn-sm btn-error'>X</button></td>
-                                <td>{std.id}</td>
-                                <td>{std.name}</td>
-                            </tr>)
+                <div className="overflow-x-auto my-5 w-full">
 
-                        }
-                    </tbody>
-                </table>
+                    <table className="table w-full">
+                        <thead>
+                            <tr>
+                                <th>Sl.</th>
+                                <th>Delete</th>
+                                <th>ID</th>
+                                <th>Name</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {
+                                storedStd.map((std, i) => <tr key={std._id}>
+                                    <th>{i + 1}</th>
+                                    <td><button onClick={() => handleDeleteStd(std._id)} className='btn btn-sm btn-error'>X</button></td>
+                                    <td>{std.id}</td>
+                                    <td>{std.name}</td>
+                                </tr>)
+
+                            }
+                        </tbody>
+                    </table>
+
+                </div>
 
                 <input type="submit" value="Submit" className={`btn btn-primary btn-sm text-white my-5 ${storedStd.length === 0 && 'hidden'}`} />
             </form>

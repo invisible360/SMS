@@ -156,7 +156,7 @@ const EntryStudents = () => {
         <div className='min-h-screen'>
 
             <h1 className='text-center text-3xl font-bold my-5 '>Student Entry</h1>
-            <form onSubmit={handleSubmit(handleStudentEntry)} className=' flex items-center justify-center flex-col space-y-5 w-1/2 mx-auto my-5'>
+            <form onSubmit={handleSubmit(handleStudentEntry)} className=' flex items-center justify-center flex-col space-y-5 w-3/4 md:w-1/2 mx-auto my-5'>
 
                 {/* Student name Field  */}
                 <input type="text" {...register("name", { required: "Name is Required" })} placeholder="Name" className="input input-bordered input-primary w-full " />
@@ -180,8 +180,8 @@ const EntryStudents = () => {
                 {errors.semester && <span className='text-red-600'>{errors.semester?.message}</span>}
 
                 {/* Batch selection */}
-                <div className='flex items-center justify-between w-full '>
-                    <select {...register("batch", { required: "Batch selection is Required" })} className="select select-primary w-[30%] ">
+                <div className='md:flex items-center justify-between w-full'>
+                    <select {...register("batch", { required: "Batch selection is Required" })} className="select select-primary w-full md:w-[30%]">
                         <option value=''>Admitted Batch</option>
                         {
                             batches.map(batch => <option key={batch._id} value={batch.mainBatch}>{batch.mainBatch}</option>)
@@ -189,7 +189,7 @@ const EntryStudents = () => {
                     </select>
 
                     {/* Day and Evening Selection  */}
-                    <div className='flex items-center w-[35%] space-x-4'>
+                    <div className='flex items-center justify-center md:w-[35%] space-x-4 my-5 md:my-0'>
                         <label className="label-text font-bold">Day</label>
                         <input type="radio" {...register("program", { required: "Program selection is Required" })} value='Day' className="radio checked:bg-blue-500" />
 
@@ -199,7 +199,7 @@ const EntryStudents = () => {
                     </div>
 
                     {/* Section Selection  */}
-                    <select {...register("section", { required: "Section selection is Required" })} className="select select-primary w-[30%] ">
+                    <select {...register("section", { required: "Section selection is Required" })} className="select select-primary w-full md:w-[30%] ">
                         <option value=''>Select Current Section</option>
                         {
                             sections.map(sections => <option key={sections._id} value={sections.section}>{sections.section}</option>)
@@ -234,7 +234,7 @@ const EntryStudents = () => {
                             })
                             }
 
-                            placeholder='1XXXXXXXXX' className='input input-bordered input-primary w-[66%] ml-5' />
+                            placeholder='1XXXXXXXXX' className='input input-bordered input-primary w-[62%] md:w-[66%] ml-5' />
 
                     </div>
 
