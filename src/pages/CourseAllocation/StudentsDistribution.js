@@ -69,7 +69,7 @@ const StudentsDistribution = () => {
         }
         else if (finalAssignemnt.length > 0) {
 
-            fetch('http://localhost:5000/spring-2023-std-list', {
+            fetch('https://sms-server-theta.vercel.app/spring-2023-std-list', {
                 method: 'PUT',
                 headers: {
                     "content-type": "application/json"

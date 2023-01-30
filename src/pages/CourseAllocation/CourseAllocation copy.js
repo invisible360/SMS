@@ -119,7 +119,7 @@ const CourseAllocation = () => {
         setIsCheckAll(false);
         setIsCheck([]);
 
-        fetch(`http://localhost:5000/student-list-fetch`, {
+        fetch(`https://sms-server-theta.vercel.app/student-list-fetch`, {
             method: 'POST',
             headers: {
                 "content-type": "application/json"
@@ -173,7 +173,7 @@ const CourseAllocation = () => {
         arrayUniqueByKey.map(e => _ids.push(e._id));
         // console.log(_ids);
 
-        fetch(`http://localhost:5000/assigned-students`, {
+        fetch(`https://sms-server-theta.vercel.app/assigned-students`, {
             method: 'POST',
             headers: {
                 "content-type": "application/json"

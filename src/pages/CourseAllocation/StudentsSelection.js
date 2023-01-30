@@ -80,7 +80,7 @@ const StudentsSelection = () => {
             semester: data.semester
         }
 
-        fetch(`http://localhost:5000/student-list-fetch`, {
+        fetch(`https://sms-server-theta.vercel.app/student-list-fetch`, {
             method: 'POST',
             headers: {
                 "content-type": "application/json"
@@ -130,7 +130,7 @@ const StudentsSelection = () => {
         // arrayUniqueByKey.map(e => _ids.push(e._id));
         holdValue.map(e => _ids.push(e._id));
        
-        fetch(`http://localhost:5000/assigned-students`, {
+        fetch(`https://sms-server-theta.vercel.app/assigned-students`, {
             method: 'POST',
             headers: {
                 "content-type": "application/json"

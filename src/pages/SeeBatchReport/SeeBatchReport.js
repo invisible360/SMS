@@ -39,7 +39,7 @@ const SeeBatchReport = () => {
     const handleSemesterFetching = (e) => {
         const getSemester = e.target.value;
         setStudnts([]);
-        fetch(`http://localhost:5000/semester-courses/${getSemester}`)
+        fetch(`https://sms-server-theta.vercel.app/semester-courses/${getSemester}`)
             .then(res => res.json())
             .then(data => {
                 if (data.length === 0) {
@@ -83,7 +83,7 @@ const SeeBatchReport = () => {
 
             const searchData = { semester, program, section, course }
 
-            fetch(`http://localhost:5000/coursewise-attendance-list`, {
+            fetch(`https://sms-server-theta.vercel.app/coursewise-attendance-list`, {
                 method: "POST",
                 headers: {
                     'content-type': 'application/json'
@@ -99,7 +99,7 @@ const SeeBatchReport = () => {
                     else {
                         setStudnts(data);
 
-                        fetch('http://localhost:5000/summery-attendance/v2', {
+                        fetch('https://sms-server-theta.vercel.app/summery-attendance/v2', {
                             method: "POST",
                             headers: {
                                 "content-type": "application/json"

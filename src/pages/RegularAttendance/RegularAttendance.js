@@ -90,7 +90,7 @@ const RegularAttendance = () => {
         const getSemester = e.target.value;
         setStudnts([]);
         setInputMode('Not Selected')
-        fetch(`http://localhost:5000/semester-courses/${getSemester}`)
+        fetch(`https://sms-server-theta.vercel.app/semester-courses/${getSemester}`)
             .then(res => res.json())
             .then(data => {
                 if (data.length === 0) {
@@ -135,7 +135,7 @@ const RegularAttendance = () => {
 
             const searchData = { semester, program, section, course }
 
-            fetch(`http://localhost:5000/coursewise-attendance-list`, {
+            fetch(`https://sms-server-theta.vercel.app/coursewise-attendance-list`, {
                 method: "POST",
                 headers: {
                     'content-type': 'application/json'
@@ -157,7 +157,7 @@ const RegularAttendance = () => {
     }
 
     const markAPI = (marks, marksType) => {
-        fetch(`http://localhost:5000/marks-record`, {
+        fetch(`https://sms-server-theta.vercel.app/marks-record`, {
             method: "PUT",
             headers: {
                 "content-type": "application/json"
@@ -175,7 +175,7 @@ const RegularAttendance = () => {
                     // navigate(0);
                     // navigate('/');
 
-                    fetch('http://localhost:5000/summery-attendance/v2', {
+                    fetch('https://sms-server-theta.vercel.app/summery-attendance/v2', {
                         method: "POST",
                         headers: {
                             "content-type": "application/json"
@@ -310,7 +310,7 @@ const RegularAttendance = () => {
     }
 
     useEffect(() => {
-        fetch('http://localhost:5000/get-attendance-log')
+        fetch('https://sms-server-theta.vercel.app/get-attendance-log')
             .then(res => res.json())
             .then(data => {
                 const existAttend = data.filter(e => e.date === format(new Date(), "PP") && e.attendCourse === inputCourse);
@@ -322,7 +322,7 @@ const RegularAttendance = () => {
     }, [inputCourse])
 
     useEffect(() => {
-        fetch(`http://localhost:5000/get-marks-log`)
+        fetch(`https://sms-server-theta.vercel.app/get-marks-log`)
             .then(res => res.json())
             .then(data => {
                 // console.log(data);
@@ -353,7 +353,7 @@ const RegularAttendance = () => {
 
         if (presentList.length > 0) {
 
-            fetch("http://localhost:5000/attendance-record", {
+            fetch("https://sms-server-theta.vercel.app/attendance-record", {
                 method: 'POST',
                 headers: {
                     "content-type": "application/json"
@@ -368,7 +368,7 @@ const RegularAttendance = () => {
 
 
                         // oraginzing data
-                        fetch('http://localhost:5000/summery-attendance/v2', {
+                        fetch('https://sms-server-theta.vercel.app/summery-attendance/v2', {
                             method: "POST",
                             headers: {
                                 "content-type": "application/json"
@@ -441,7 +441,7 @@ const RegularAttendance = () => {
 
         courseAttendance.map(e => attenMark.push({ course: inputCourse, studentList_id: e._id, attendanceMark: parseInt((e.attendance.filter(e2 => e2.status === "P").length / onlydate.length) * 10) }))
        
-        fetch(`http://localhost:5000/marks-record`, {
+        fetch(`https://sms-server-theta.vercel.app/marks-record`, {
             method: "PUT",
             headers: {
                 "content-type": "application/json"

@@ -120,7 +120,7 @@ const EntryStudents = () => {
                             // ]
                         }
 
-                        fetch('http://localhost:5000/student-list')
+                        fetch('https://sms-server-theta.vercel.app/student-list')
                             .then(res => res.json())
                             .then(allStudents => {
                                 const alreadyEntry = allStudents.find(student => student.id === studentData.id && student.semester === studentData.semester);
@@ -130,7 +130,7 @@ const EntryStudents = () => {
                                 }
 
                                 else {
-                                    fetch('http://localhost:5000/student-list', {
+                                    fetch('https://sms-server-theta.vercel.app/student-list', {
                                         method: 'POST',
                                         headers: {
                                             'content-type': 'application/json'
